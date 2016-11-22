@@ -1,0 +1,229 @@
+@name "Coleslaw";
+@author "Ranlmepow";
+@comment "http://github.com";
+@uuid F8D71E9B-7AB9-48B3-8E5D-E61ADEBDFDEF;
+
+@function colr($hsl) {
+     $h: map-get($hsl, h);
+     $s: map-get($hsl, s);
+     $l: map-get($hsl, l);
+  
+     @return hsl($h, (8+$s) / 8 * 100%, (8+$l) / 16 * 100%);
+}
+
+@function defc($hsl) {
+    @return (h: nth($hsl, 1), s: nth($hsl, 2), l: nth($hsl, 3));
+}
+
+@function adjc($base, $hsl) {
+    @return (
+            h: map-get($base, h) + nth($hsl, 1),
+            s: map-get($base, s) + nth($hsl, 2),
+            l: map-get($base, l) + nth($hsl, 3));
+}
+
+
+$main: defc(27 -1.75 -0.35);
+
+// Keyword
+$keyw  : adjc($main,     0  2  3);      // class
+$ctrl  : adjc($keyw,   -30  1  0);      // if for
+$assign: adjc($keyw,     0 -4 -2);      // =
+$symbol: adjc($keyw,     0  0 -2);      // + *
+$comp  : adjc($keyw,    30  0 -3);      // is == <=
+$logic : adjc($keyw,    30  0 -3);      // and not
+$punc  : adjc($main,    30 -5  1);
+
+// Text
+$text  : adjc($main,     0 -4  5.25);      // foo
+$lang  : adjc($main,    15  2  2);      // null true
+$this  : adjc($text,  -100  0 -5);      // this self
+$item  : adjc($text,   -15  0 -3);      // foo[bar]
+$asspun: adjc($punc,     0  5 -3);      // foo.bar
+$call  : adjc($text,     0  9  9);      // foo[bar]
+$other : adjc($text,    30  2 -2);
+
+// Literal
+$word  : adjc($main,  -180 -1  0);
+$str   : adjc($word,     0 -1.5  0);      // "hello"
+$strpun: adjc($str,    -15 -1  2);      // "..."
+$esc   : adjc($str,     45  3  1);      // "new\n"
+$place : adjc($str,     90  4  3);      // "adam is %s"
+$num   : adjc($word,   -15  0  3);      // 123.0
+$caps  : adjc($word,     0  3  3);      // ALL_CAPS
+$regex : adjc($str,      0  0  0);      // r"[0-9]+"
+
+// Builtin
+$const : adjc($main,   120 -2  0);      // math.pi
+$func  : adjc($const,   15  1  2);      // foo()
+$type  : adjc($const,    0  1  0);      // int()
+
+// Definition
+$defkw : adjc($keyw,    0 -1 -1);
+$deffun: adjc($main,  -25 -1  1);
+$defcls: adjc($main,  -10  0  1);
+$defvar: adjc($main,  -10  0  0);
+$supcls: $type;
+$param : adjc($text,    0  4 -0.5);
+
+// Comment and Background
+$comm  : adjc($main,   165 -5.50 -0.75);   // #brabra
+$back  : adjc($main,     8 -5.00 -5.75);
+$select: adjc($back,     0  0     2);
+$illbk : adjc($back,     0  0    -1);
+$commbk: adjc($back,    -8 -0.25 -0.15);
+
+
+* {
+    background: colr($back);
+    foreground: colr($text);
+    caret: #fff;
+    lineHighlight: #444;
+    selection: colr($select);
+}
+
+
+punctuation \- entity \- storage \- keyword {
+    foreground: colr($punc);
+}
+punctuation.accessor {
+    foreground: colr($asspun);
+}
+
+string {
+    foreground: colr($str);
+    punctuation.definition { foreground: colr($strpun); }
+    &.constant            { foreground: colr($str); }
+    &.quoted              { foreground: colr($str); background: colr($commbk); }
+    &.regexp              { foreground: colr($regex); }
+}
+source.regexp {
+    foreground: colr($regex);
+}
+
+
+constant {
+    foreground: colr($lang);
+    &.numeric            { foreground: colr($num); }
+    &.other.placeholder  { foreground: colr($place); }
+    &.character.escape   { foreground: colr($esc); }
+    &.other.allcaps      { foreground: colr($caps); }
+}
+
+comment {
+    punctuation {
+        foreground: colr($comm);
+    }
+    foreground: colr($comm);
+    background: colr($commbk);
+}
+
+
+support {
+    //& \- magic { foreground: colr($text); }
+    &.constant \- &.constant.magic, &.variable \- &.variable.magic { foreground: colr($const); }
+    &.function \- &.function.magic { foreground: colr($func); }
+    &.type           { foreground: colr($type); }
+
+}
+
+entity {
+    foreground: colr($text);
+}
+
+invalid {
+    foreground: colr($text);
+    &.illegal { background: colr($illbk); }
+}
+
+keyword {
+    foreground: colr($keyw);
+    
+    &.operator.assignment     { foreground: colr($assign); }
+    &.operator.comparison     { foreground: colr($comp); }
+    &.operator.arithmetic     { foreground: colr($symbol); }
+    &.operator.logical        { foreground: colr($logic); }
+    &.other                   { foreground: colr(adjc($keyw, -10 -2 -1.5)); }
+}
+
+storage.type {
+    &.class    { foreground: colr($defkw); fontStyle: bold; }
+    &.function { foreground: colr($defkw); fontStyle: bold; }
+}
+
+
+entity {
+    &.other.inherited-class { foreground: colr($type); }
+    &.name.class            { foreground: colr($defcls); fontStyle: bold; }
+    &.name.function         { foreground: colr($deffun); fontStyle: bold; }
+    &.name.tag              { foreground: colr(adjc($deffun, 0 -0.5 -0.5)); }
+    &.other.attribute-name  { foreground: colr(adjc($keyw, 0 -1 -1)); }
+}
+
+
+variable {
+    foreground: colr($text);
+    &.other { foreground: colr($other); }
+    &.parameter {
+        foreground: colr($param);
+        fontStyle: italic;
+    }
+    &.language { foreground: colr($this); }
+    &.function { foreground: colr($call); }
+}
+
+meta.item-access.arguments {
+    foreground: colr($item);
+}
+
+
+storage, storage.type, support.type {
+    foreground: colr($type);
+}
+storage.modifier {
+    foreground: colr($keyw);
+}
+storage.type.generic storage.type {
+    foreground: colr(adjc($type, -45 -2  0));
+}
+
+meta.preprocessor {
+    foreground: colr($this);
+}
+
+
+// Multilevel Json
+@function multilevel($repeat, $final, $count){
+    @if $count == 1 {
+        @return '#{$final}';
+    } @else {
+        @return '#{$repeat} ' + multilevel($repeat, $final, $count - 1);
+    }
+}
+
+
+@for $i from 1 through 12 { 
+    source.json #{ multilevel('meta meta', 'meta.structure.dictionary string.quoted', $i) } {
+        @if $i == 1 {
+            foreground: colr($deffun);
+        } @else {
+            foreground: colr(adjc($keyw, 0 -1 -1));
+        }
+    }
+    
+    // source.yaml #{ multilevel('entity.name.tag', 'entity.name.tag', $i) } {
+    //     @if $i == 1 {
+    //         foreground: colr($deffun);
+    //     } @else {
+    //         foreground: colr(adjc($keyw, 0 -1 -1));
+    //     }
+    // }
+
+    source.json #{ multilevel('meta meta', 'meta.structure.dictionary meta.structure.dictionary.value string.quoted', $i) } {
+        foreground: colr($str);
+    }
+
+    // source.yaml #{ multilevel('entity.name.tag', 'entity.name.tag', $i) } {
+    //     foreground: colr(adjc($str, 0 -1 -1));
+    // }
+}
