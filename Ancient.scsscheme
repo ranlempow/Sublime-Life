@@ -30,12 +30,13 @@ $keyw  : adjc($main,     0  2  3);      // class
 $ctrl  : adjc($keyw,   -30  1  0);      // if for
 $assign: adjc($keyw,     0 -4 -2);      // =
 $symbol: adjc($keyw,     0  0 -2);      // + *
-$comp  : adjc($keyw,    30  0 -3);      // is == <=
-$logic : adjc($keyw,    30  0 -3);      // and not
+$comp  : adjc($keyw,    30 -1 -2);      // is == <=
+$logic : adjc($keyw,    30 -1 -2);      // and not
 $punc  : adjc($main,    30 -5  1);
 
 // Text
 $text  : adjc($main,     0 -4  5.25);      // foo
+$light : adjc($main,     0 -3  6);      
 $lang  : adjc($main,    15  2  2);      // null true
 $this  : adjc($text,  -100  0 -5);      // this self
 $item  : adjc($text,   -15  0 -3);      // foo[bar]
@@ -72,6 +73,7 @@ $back  : adjc($main,     8 -5.00 -5.75);
 $select: adjc($back,     0  0     2);
 $illbk : adjc($back,     0  0    -1);
 $commbk: adjc($back,    -8 -0.25 -0.15);
+$emphbk: adjc($back,    -3 -0.45  0.25);
 
 
 * {
@@ -83,117 +85,412 @@ $commbk: adjc($back,    -8 -0.25 -0.15);
 }
 
 
-punctuation \- entity \- storage \- keyword {
+entity {
+    @name "Entity";
+    foreground: colr($text);
+}
+
+invalid {
+    @name "Invalid";
+    foreground: colr($text);
+    
+    &.illegal {
+        @name "Illegal";
+        background: colr($illbk); 
+    }
+    // TODO: choice other color
+    &.deprecated {
+        @name "Deprecated";
+        background: colr($illbk);    
+    }
+}
+
+
+// punctuation.terminator           ->      stmt;
+//                                          ^
+// punctuation.definition.section   ->      {code;}
+//                                          ^     ^
+// punctuation.definition.constant  ->      #const
+//                                          ^
+// punctuation.section.group
+// punctuation.section.list
+// punctuation.section.dictionary
+// punctuation.definition.map
+// punctuation.definition.set
+// punctuation.definition.vector
+
+punctuation \-\( entity \| storage \| keyword \) {
+    @name "Punctuation";
     foreground: colr($punc);
 }
-punctuation.accessor {
+
+punctuation {
+    // punctuation.accessor             ->      a.b->c
+    //                                           ^ ^^
+    &.accessor {
+        @name "Accessor";
+        foreground: colr($asspun);
+    }
+
+    // !! not sure
+    // punctuation.definition.variable  ->      $abc
+    //                                          ^
+    &.definition.variable {
+        @name "Variable definition";
+        foreground: colr($asspun);
+    }
+
+}
+// punctuation.definition.constant      ->      #8f00cc
+//                                              ^
+constant.character.entity, punctuation.definition.entity, punctuation.definition.constant {
+    @name "Constant definition";
     foreground: colr($asspun);
 }
 
+
+// string                               ->      "str"
+//                                               ^^^      
 string {
+    @name "String";
     foreground: colr($str);
-    punctuation.definition { foreground: colr($strpun); }
+
+    // punctuation.definition.string    ->      "str"
+    //                                          ^   ^
+    punctuation.definition {
+        @name "String punctuation";
+        foreground: colr($strpun);
+    }
     &.constant            { foreground: colr($str); }
-    &.quoted              { foreground: colr($str); background: colr($commbk); }
-    &.regexp              { foreground: colr($regex); }
+    &.quoted              {
+        @name "String quoted";
+        foreground: colr($str);
+        background: colr($commbk);
+    }
 }
-source.regexp {
+
+comment.block.documentation, string.docstring  {
+    @name "Docstring";
+    foreground: colr($str);
+}
+
+string.quoted.double.block, string.quoted.single.block {
+    @name "Block string";
+    foreground: colr($str);
+}
+
+
+// string.regex                     ->      /match/g
+//                                           ^^^^^      
+string.regexp, source.regexp {
+    @name "Regexp";
     foreground: colr($regex);
 }
 
 
+
 constant {
-    foreground: colr($lang);
-    &.numeric            { foreground: colr($num); }
-    &.other.placeholder  { foreground: colr($place); }
-    &.character.escape   { foreground: colr($esc); }
-    &.other.allcaps      { foreground: colr($caps); }
+    // constant.language                ->      true, false, null
+    &.language {
+        @name "Built-in constant";
+        foreground: colr($lang);
+    }
+    // constant.numeric                 ->      100.0
+    &.numeric {
+        @name "Numeric";
+        foreground: colr($num);
+    }
+    &.other, &.other.allcaps, &.other.enum, &.character {
+        @name "User-defined constant";
+        foreground: colr($caps);
+    }
+    // constant.placeholder             ->      'my name is {1}'
+    //                                                      ^^^
+    &.other.placeholder {
+        @name "Placeholder";
+        foreground: colr($place);
+    }
+    // constant.escape                  ->      'another lines\n'
+    //                                                        ^^
+    &.character.escape {
+        @name "Escape";
+        foreground: colr($esc);
+    }
 }
 
 comment {
-    punctuation {
-        foreground: colr($comm);
-    }
+    @name "Comment";
+    foreground: colr($comm);
+    background: colr($commbk);
+}
+punctuation.definition.comment, punctuation.definition.line-comment {
+    @name "Comment punctuation";
     foreground: colr($comm);
     background: colr($commbk);
 }
 
 
 support {
-    //& \- magic { foreground: colr($text); }
-    &.constant \- &.constant.magic, &.variable \- &.variable.magic { foreground: colr($const); }
-    &.function \- &.function.magic { foreground: colr($func); }
-    &.type           { foreground: colr($type); }
-
+    &.keyword {
+        @name "Library keyword";
+        foreground: colr($keyw);
+    }
+    // support.constant                 ->      PI
+    &.constant \- &.constant.magic {
+        @name "Library constant";
+        foreground: colr($const);
+    }
+    &.variable \- &.variable.magic {
+        @name "Library variable";
+        foreground: colr($const);
+    }
+    // support.function                 ->      typeof()
+    &.function \- &.function.magic {
+        @name "Library function";
+        foreground: colr($func);
+    }
+    &.function.builtin {
+        @name "Library builtin";
+        foreground: colr($func);
+    }
+    // support.type                     ->      int()
+    &.type, &.class {
+        @name "Library type";
+        foreground: colr($type);
+    }
+    &.type.exception {
+        @name "Exception type";
+        foreground: colr($type);
+    }
+    &.module {
+        @name "Library module";
+        foreground: colr($this);
+    }
 }
 
-entity {
-    foreground: colr($text);
-}
-
-invalid {
-    foreground: colr($text);
-    &.illegal { background: colr($illbk); }
-}
-
+// TODO: ? keyword.control.catch-exception
+// TODO: ? keyword.control.trycatch
+// TODO: ? keyword.control.flow.except
 keyword {
+    
+    @name "Keyword";
     foreground: colr($keyw);
     
-    &.operator.assignment     { foreground: colr($assign); }
-    &.operator.comparison     { foreground: colr($comp); }
-    &.operator.arithmetic     { foreground: colr($symbol); }
-    &.operator.logical        { foreground: colr($logic); }
-    &.other                   { foreground: colr(adjc($keyw, -10 -2 -1.5)); }
+    // keyword.control                  ->      if ...
+    &.operator.keyword {
+        @name "Keyword control";
+        foreground: colr($keyw);
+    }
+    // keyword.operator.assignment      ->      a = b
+    //                                            ^
+    &.operator.assignment {
+        @name "Assignment";
+        foreground: colr($assign);
+    }
+    // keyword.operator.assignment.augmented ->      a += b
+    //                                                 ^^
+    &.operator.assignment.augmented {
+        @name "Augmented assignment";
+        foreground: colr($assign);
+    }
+    // keyword.operator.comparison      ->      a == b
+    //                                            ^^
+    &.operator.comparison {
+        @name "Comparison";
+        foreground: colr($comp);
+    }
+    // keyword.operator.arithmetic      ->      a + b
+    //                                            ^
+    &.operator.arithmetic, &.operator.bitwise {
+        @name "Arithmetic";
+        foreground: colr($symbol);
+    }
+    // keyword.operator.arithmetic      ->      a and b
+    //                                            ^^^
+    &.operator.logical {
+        @name "Logical";
+        foreground: colr($logic);
+    }
+    // example??
+    &.other {
+        @name "Other keyword";
+        foreground: colr(adjc($keyw, -10 -2 -1.5));
+    }
+
+    // TODO: keyword.operator.module
+    // TODO: keyword.control.import
+    // TODO: keyword.other.package
+    // TODO: keyword.other.import
 }
 
-storage.type {
-    &.class    { foreground: colr($defkw); fontStyle: bold; }
-    &.function { foreground: colr($defkw); fontStyle: bold; }
+meta.expression.generator keyword.control.flow {
+    @name "Keywords in comprehension ";
+    foreground: #FFFF00;
 }
+meta.expression.generator {
+    @name "Comprehension";
+    background: colr($emphbk);
+}
+
+
+
+storage.type {
+    // storage.type.class               ->      class MyClass {}
+    //                                          ^^^^^
+    &.class {
+        @name "Class keyword";
+        foreground: colr($defkw);
+        fontStyle: bold;
+    }
+    // storage.type.class               ->      function Myfunc() {}
+    //                                          ^^^^^^^^
+    &.function {
+        @name "Function keyword";
+        foreground: colr($defkw);
+        fontStyle: bold;
+    }
+
+    // storage.type.generic storage.type -> T<U, V>
+    //                                        ^  ^
+    &.generic & {
+        @name "Generic type";
+        foreground: colr(adjc($type, -45 -2  0));
+    }
+    // storage.type.class               ->      @Deprecated
+    //                                          ^^^^^^^^^^^
+    &.annotation {
+        @name "Annotation";
+        foreground: colr($defkw);
+        fontStyle: bold;
+    }
+}
+
+// storage.type                         ->      static int a;
+//                                                     ^^^
+storage, storage.type {
+    @name "Storage type";
+    foreground: colr($type);
+}
+meta.method.return-type storage.type {
+    @name "Return type";
+}
+// storage.modifier                     ->      static int a;
+//                                              ^^^^^^
+storage.modifier {
+    @name "Storage modifier";
+    foreground: colr($keyw);
+}
+
 
 
 entity {
-    &.other.inherited-class { foreground: colr($type); }
-    &.name.class            { foreground: colr($defcls); fontStyle: bold; }
-    &.name.function         { foreground: colr($deffun); fontStyle: bold; }
-    &.name.tag              { foreground: colr(adjc($deffun, 0 -0.5 -0.5)); }
-    &.other.attribute-name  { foreground: colr(adjc($keyw, 0 -1 -1)); }
+    // entity.name.at-rule (CSS)        ->      @name "...";
+    //                                          ^^^^^
+    &.name.at-rule {
+        @name "At-rule";
+        foreground: colr($type);
+    }
+    // entity.name.package (Scala)
+    &.name.package {
+        @name "Scala Package";
+        foreground: colr($type);
+    }
+
+    // entity.other.inherited-class     ->      public class HashMap<K,V> extends AbstractMap<K,V>
+    //                                                                            ^^^^^^^^^^^^^^^^
+    &.other.inherited-class, &.other {
+        @name "Inherited class";
+        foreground: colr($type);
+    }
+    // entity.other.inherited-class     ->      public class HashMap<K,V> extends AbstractMap<K,V>
+    //                                                       ^^^^^^^^^^^^
+    &.name.class, &.name.type.class, variable.other.class {
+        @name "Class definition";
+        foreground: colr($defcls);
+        fontStyle: bold;
+    }
+    &.name.function {
+        @name "Function definition";
+        foreground: colr($deffun);
+        fontStyle: bold;
+    }
+
+    // entity.name.tag                  ->      <body>
+    //                                           ^^^^
+    &.name.tag {
+        @name "Tag Name";
+        foreground: colr(adjc($deffun, 0 -0.5 -0.5));
+    }
+    // entity.name.tag.doctype          ->      <!DOCTYPE html>
+    //                                            ^^^^^^^
+    &.name.tag.doctype {
+        @name "Doctype";
+        foreground: colr($defcls);
+    }
+    // entity.name.other.attribute-name ->      <body attr="value">
+    //                                                ^^^^
+    &.other.attribute-name {
+        @name "Attribute Name";
+        foreground: colr(adjc($keyw, 0 -1 -1));
+    }
+
+    // TODO: more emphasize color
+    &.other.attribute-name.id {
+        @name "Attribute IDs";
+        foreground: colr(adjc($keyw, 0  2  0));
+    }
 }
 
 
+
+// TODO: variable, punctuation.definition.variable
+// TODO: variable.other, meta.variable.other.valid
 variable {
     foreground: colr($text);
     &.other { foreground: colr($other); }
+
+    // variable.parameter               ->      function foo(a, b)
+    //                                                       ^  ^
     &.parameter {
+        @name "Parameter";
         foreground: colr($param);
         fontStyle: italic;
     }
-    &.language { foreground: colr($this); }
-    &.function { foreground: colr($call); }
+    // variable.language                ->      this.foo.bar()
+    //                                          ^^^^
+    &.language, &.parameter.function.language {
+        @name "Language literal";
+        foreground: colr($this);
+    }
+    // variable.function                ->      this.foo.bar()
+    //                                                   ^^^
+    &.function {
+        @name "Function call";
+        foreground: colr($call);
+    }
 }
 
+// variable.function                    ->      this.foo[bar]
+//                                                       ^^^
 meta.item-access.arguments {
+    @name "Item access";
     foreground: colr($item);
+    background: colr($emphbk);
 }
 
-
-storage, storage.type, support.type {
-    foreground: colr($type);
-}
-storage.modifier {
-    foreground: colr($keyw);
-}
-storage.type.generic storage.type {
-    foreground: colr(adjc($type, -45 -2  0));
-}
 
 meta.preprocessor {
+    @name "C/C++ Preprocessor Line";
     foreground: colr($this);
 }
 
+meta.preprocessor keyword {
+    @name "C/C++ Preprocessor Directive";
+    foreground: colr($this);
+}
 
 // Multilevel Json
-@function multilevel($repeat, $final, $count){
+@function multilevel($repeat, $final, $count) {
     @if $count == 1 {
         @return '#{$final}';
     } @else {
@@ -201,6 +498,15 @@ meta.preprocessor {
     }
 }
 
+// meta.structure.dictionary meta.structure.dictionary.key, constant.other.object.key string, meta.object-literal.key {
+//     @name "Dict key";
+//     fontStyle: bold;
+//     foreground: #A9FF98;
+// }
+// meta.structure.dictionary.value {
+//     @name "Dict Value";
+//     foreground: #7DC5F9;
+// }
 
 @for $i from 1 through 12 { 
     source.json #{ multilevel('meta meta', 'meta.structure.dictionary string.quoted', $i) } {
@@ -227,3 +533,80 @@ meta.preprocessor {
     //     foreground: colr(adjc($str, 0 -1 -1));
     // }
 }
+
+
+// Markup
+// ------
+
+markup.italic, punctuation.definition.italic {
+    @name "Markup italic";
+    fontStyle: italic;
+}
+markup.bold, punctuation.definition.bold {
+    @name "Markup bold";
+    fontStyle: bold;
+}
+markup.raw.inline, markup.raw.block, punctuation.definition.raw {
+    @name "Markup raw";
+    foreground: colr($str);
+    background: colr($commbk);
+}
+
+
+// punctuation.definition.heading
+// entity.name.section
+// markup.heading.\1
+// markup.heading
+markup.heading, entity.name.section {
+    @name "Markup heading";
+    foreground: colr($call);
+}
+
+markup.list.unnumbered, markup.list.numbered {
+
+}
+
+punctuation.definition.list_item {
+    @name "Markup list";
+    foreground: colr($call);
+}
+
+markup.quote {
+    @name "Markup quote";
+    background: colr($emphbk);
+}
+punctuation.definition.blockquote {
+    @name "Markup quote punctuation";
+    foreground: colr($comm);
+    background: colr($comm);
+}
+
+
+// constant.other.reference.link
+string.other.link, markup.underline.link {
+    @name "Markup link";
+    foreground: colr($str);
+}
+
+meta.separator.markdown {
+    @name "Markup separator";
+    foreground: colr($comm);
+}
+
+
+
+// Javascript Bable
+// ----------------
+
+// meta.embedded.expression {
+//     @name "Babel - Embedded Expression";
+//     background: #635E0470;
+//     fontStyle: ;
+// }
+
+// punctuation.section.embedded {
+//     @name "Babel - Embedded Expression Punctuation";
+//     fontStyle: bold italic;
+//     foreground: #FFF707;
+//}
+

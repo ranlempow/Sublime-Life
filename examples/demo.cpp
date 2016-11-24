@@ -4,7 +4,7 @@ public:
   dynamic_vertex_properties_writer(const dynamic_properties& dp,
                                    const std::string& node_id)
     : dp(&dp), node_id(&node_id) { }
-
+  
   template<typename Descriptor>
   void operator()(std::ostream& out, Descriptor key) const
   {
@@ -20,7 +20,7 @@ public:
         out << i->first << "=" << escape_dot_string(i->second->get_string(key));
       }
     }
-
+    
     if (!first) out << "]";
   }
 

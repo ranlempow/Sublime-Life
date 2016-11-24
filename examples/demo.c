@@ -1,5 +1,4 @@
 #include <stdio.h>
-
 #define QuantumToCharToQuantumEqQuantum(quantum) \
   ((ScaleCharToQuantum((unsigned char) ScaleQuantumToChar(quantum))) == quantum)
     MagickBooleanType
