@@ -1,114 +1,90 @@
+# noqa: D, V, E501
+import sublime_plugin
+import sublime
+import json
+import re
+import os.path
 
-import sublime_plugin, sublime, json
-import re, threading, time, os, webbrowser
-
-class IntelliDocsCommand(sublime_plugin.TextCommand):
-	
-	last_function_name = None
-	last_found = False
-	cache = {}
-	menu_links = {}
-	def __init__(self, view):
-		self.view = view
-		self.settings = sublime.load_settings("IntelliDocs.sublime-settings")
-
-	def run(self, edit):
-		# Find db for lang
-		lang = self.getLang()
-		if lang not in self.cache: #DEBUG disable cache: or 1 == 1
-			path_db = os.path.dirname(os.path.abspath(__file__))+"/db/%s.json" % lang
-			self.debug("Loaded intelliDocs db:", path_db)
-			if os.path.exists(path_db):
-				self.cache[lang] = json.load(open(path_db))
-			else:
-				self.cache[lang] = {}
-
-		completions = self.cache[lang]
-
-		# Find in completions
-		if completions:
-			function_names = self.getFunctionNames(completions)
-			found = False
-			for function_name in function_names:
-				completion = completions.get(function_name)
-				if completion:
-					found = completion
-					break
-
-			if found:
-				self.view.set_status('hint', found["syntax"]+" | ")
-				menus = []
-				# Syntax
-				menus.append(found["syntax"])
-
-				# Description
-				for descr in re.sub("(.{80,100}[\.]) ", "\\1||", found["descr"]).split("||"): #Spit long description lines
-					menus.append(" "+descr)
-
-				#Parameters
-				if found["params"]:
-					menus.append("Parameters:")
-				for parameter in found["params"]:
-					menus.append(" - "+parameter["name"]+": "+parameter["descr"])
-					"""first = True
-					for part in re.sub("(.{50,150}?)\. ", "\\1.|", parameter["descr"]).split("|"):
-						if first:
-							menus.append(parameter["name"]+": "+part.strip())
-						else:
-							menus.append("- "+part)
-						first = False"""
-				self.last_found = found
-
-				menu = self.appendLinks(menus, found)
-					
-				self.view.show_popup_menu(menus, self.action)
-			else:
-				self.view.erase_status('hint')
-
-	def getLang(self):
-		scope = self.view.scope_name(self.view.sel()[0].b) #try to match against the current scope
-		for match, lang in self.settings.get("docs").items():
-			if re.match(".*"+match, scope): return lang
-		self.debug(scope)
-		return re.match(".*/(.*?).tmLanguage", self.view.settings().get("syntax")).group(1) #no match in predefined docs, return from syntax filename
-
-	def getFunctionNames(self, completions):
-		# Find function name
-		word = self.view.word(self.view.sel()[0])
-		word.a = word.a - 100 # Look back 100 character
-		word.b = word.b + 1 # Ahead word +1 char
-		buff = self.view.substr(word).strip()
-
-		buff = " "+re.sub(".*\n", "", buff) # Keep only last line
-
-		# find function names ending with (
-		matches = re.findall("([A-Za-z0-9_\]\.\$\)]+\.[A-Za-z0-9_\.\$]+|[A-Za-z0-9_\.\$]+[ ]*\()", buff)
-		matches.reverse()
-		function_names = []
-		for function_name in matches:
-			function_name = function_name.strip(".()[] ")
-			if len(function_name) < 2: continue
-			function_names.append(function_name)
-			if "." in function_name:
-				function_names.append(re.sub(".*\.(.*?)$", "\\1", function_name))
-		function_names.append(self.view.substr(self.view.word(self.view.sel()[0]))) #append current word
-		self.debug(function_names)
-		return function_names
+STYLE = """
+body, h4, p {
+    margin: 6px 0px;
+}
+body {
+    padding: 0px 24px;
+    font-size: 12px;
+}
+"""
 
 
-	def appendLinks(self, menus, found):
-		self.menu_links = {}
-		for pattern, link in sorted(self.settings.get("help_links").items()):
-			if re.match(pattern, found["path"]):
-				host = re.match(".*?//(.*?)/", link).group(1)
-				self.menu_links[len(menus)] = link % found
-				menus.append(" > Goto: %s" % host)
-		return menus
+class IntelliDocsEventListener(sublime_plugin.EventListener):
+    cache = {}
 
-	def action(self, item):
-		if item in self.menu_links:
-			webbrowser.open_new_tab(self.menu_links[item])
+    def __init__(self):
+        self.settings = sublime.load_settings("IntelliDocs.sublime-settings")
 
-	def debug(self, *text):
-		if self.settings.get("debug"):
-			print(*text)
+    def debug(self, *text):
+        if self.settings.get("debug"):
+            print(*text)
+
+    def getLang(self, view):
+        scope = view.scope_name(view.sel()[0].b)  # try to match against the current scope
+        for match, lang in self.settings.get("docs").items():
+            if re.match(".*"+match, scope):
+                return lang
+        # no match in predefined docs, return from syntax filename
+        return re.match(".*/(.*?).tmLanguage", view.settings().get("syntax")).group(1)
+
+    def getCompletions(self, view):
+        # Find completions database for lang
+        lang = self.getLang(view)
+        if lang not in self.cache:  # DEBUG disable cache: or 1 == 1
+            path_db = os.path.dirname(os.path.abspath(__file__))+"/db/%s.json" % lang
+            self.debug("Loaded intelliDocs db:", path_db)
+            if os.path.exists(path_db):
+                self.cache[lang] = json.load(open(path_db))
+            else:
+                self.cache[lang] = {}
+        return self.cache.get(lang)
+
+    def excutePunctStart(self, view, punctuation_start):
+        buff = view.substr(sublime.Region(punctuation_start - 100, punctuation_start))
+        function_match = re.search('[a-zA-Z0-9_\$\.]+[ \t]*$', buff)
+        func_name = function_match.group(0) if function_match else None
+
+        # 'a.b.c' => ['a.b.c', 'b.c', 'c']
+        function_names = []
+        while func_name:
+            function_names.append(func_name)
+            if '.' not in func_name:
+                break
+            func_name = func_name.split('.', 1)[1]
+
+        if function_names:
+            self.debug(function_names)
+            self.excuteFunctionNames(view, punctuation_start, function_names)
+
+    def excuteFunctionNames(self, view, punctuation_start, function_names):
+        completions = self.getCompletions(view)
+        for function_name in function_names:
+            completion = completions.get(function_name)
+            if completion:
+                break
+
+        if completion:
+            menus = ['<style>{style}</style><h4>{syntax}</h4><p>{descr}</p>'.format(style=STYLE, **completion)]
+            if completion["params"]:
+                menus.append('<h5>Args:</h5>')
+                for parameter in completion["params"]:
+                    menus.append('<p>{name}: {descr}</p>'.format(**parameter))
+            self.debug(completion)
+            view.show_popup(''.join(menus), location=punctuation_start, max_width=600)
+
+    def on_selection_modified(self, view):
+        punctuation_start = None
+        point = view.sel()[0].a
+        for p in [point - 1, point]:
+            if view.substr(p) == '(' and view.classify(p) | sublime.CLASS_PUNCTUATION_START:
+                punctuation_start = p
+
+        if punctuation_start is not None:
+            self.excutePunctStart(view, punctuation_start)
