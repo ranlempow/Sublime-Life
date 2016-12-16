@@ -1,8 +1,7 @@
 {
 	"schema_version": "3.0.0",
-  "packages": [
-    {
-			"name": "Alignment",
+	"packages": [
+		{
 			"details": "https://github.com/wbond/sublime_alignment",
 			"releases": [
 				{
@@ -10,6 +9,15 @@
 					"tags": true
 				}
 			]
+		},
+		{
+			"details": "https://github.com/ranlempow/open-url",
+			"releases": [
+				{
+					"sublime_text": "*",
+					"tags": true
+				}
+			]
 		}
-  ]
+	]
 }
