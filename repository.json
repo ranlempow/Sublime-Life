@@ -2,7 +2,8 @@
 	"schema_version": "3.0.0",
 	"packages": [
 		{
-			"details": "https://github.com/wbond/sublime_alignment",
+			"name": "Open URL (ranlempow)",
+			"details": "https://github.com/ranlempow/open-url",
 			"releases": [
 				{
 					"sublime_text": "*",
@@ -11,7 +12,38 @@
 			]
 		},
 		{
-			"details": "https://github.com/ranlempow/open-url",
+			"name": "IntelliDocs (ranlempow)",
+			"details": "https://github.com/ranlempow/Sublime-IntelliDocs",
+			"releases": [
+				{
+					"sublime_text": "*",
+					"tags": true
+				}
+			]
+		},
+		{
+			"name": "SublimeLinter-CleanCode (ranlempow)",
+			"details": "https://github.com/ranlempow/SublimeLinter-CleanCode",
+			"releases": [
+				{
+					"sublime_text": "*",
+					"tags": true
+				}
+			]
+		},
+		{
+			"name": "RansTool (ranlempow)",
+			"details": "https://github.com/ranlempow/Sublime-RansTool",
+			"releases": [
+				{
+					"sublime_text": "*",
+					"tags": true
+				}
+			]
+		},
+		{
+			"name": "Ancient (ranlempow)",
+			"details": "https://github.com/ranlempow/Ancient",
 			"releases": [
 				{
 					"sublime_text": "*",
