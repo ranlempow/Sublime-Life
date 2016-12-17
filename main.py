@@ -13,22 +13,13 @@ class PleasurazyAPICompletionsPackage():
             for API_Keyword in self.API_Setup:
                 self.api[API_Keyword] = sublime.load_settings('sbc-api-' + API_Keyword + '.sublime-settings')
 
-        # Caching extended completions(deprecated)
-        if self.settings.get('completion_active_extend_list'):
-            for API_Keyword in self.settings.get('completion_active_extend_list'):
-                self.api[API_Keyword] = sublime.load_settings('sbc-api-' + API_Keyword + '.sublime-settings')
-
-
 
 # In Sublime Text 3 things are loaded async, using plugin_loaded() callback before try accessing.
 pleasurazy = PleasurazyAPICompletionsPackage()
 
-if int(sublime.version()) < 3000:
+def plugin_loaded():
+    global pleasurazy
     pleasurazy.init()
-else:
-    def plugin_loaded():
-        global pleasurazy
-        pleasurazy.init()
 
 
 
