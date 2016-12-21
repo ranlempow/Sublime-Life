@@ -1,0 +1,4 @@
+[
+    { "caption": "ExtraCompletion: Install By View", "command": "extra_completion_install_by_view" },
+    { "caption": "ExtraCompletion: Remove Syntax", "command": "extra_completion_remove" }
+]
