@@ -1,0 +1,17 @@
+{
+	"language": "Python",
+	"suffix": "test1",
+	"scope": "source.python",
+	"completions": [],
+	"file_extensions": ["py"],
+	
+	"build":
+	{
+		"fofo": "type sbc-api-fofo.sublime-settings"
+	},
+	
+	"includes_completions":
+	[
+		"fofo"
+	]
+}
