@@ -5,7 +5,7 @@ import os
 import sys
 import json
 
-sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'thirdparty'))
 import watchdog
 from watchdog.observers.polling import PollingObserver as Observer
 
