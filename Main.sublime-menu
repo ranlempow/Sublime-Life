@@ -6,27 +6,47 @@
                 "caption": "Package Settings",
                 "children": [
                     {
-                        "caption": "Sublime Better Completion",
+                        "caption": "Sublime Extra Completion",
                         "children": [
+                            { "caption": "-" },
                             {
-                                "caption": "-"
-                            },
-                            {
+                                "command": "open_file",
                                 "args": {
-                                    "file": "${packages}/Better Completion/sbc-setting.sublime-settings"
+                                    "file": "${packages}/Extra Completion/sbc-setting.sublime-settings"
                                 },
-                                "caption": "Settings \u2013 Default",
-                                "command": "open_file"
+                                "caption": "Settings \u2013 Default"
                             },
                             {
+                                "command": "open_file",
                                 "args": {
                                     "file": "${packages}/User/sbc-setting.sublime-settings"
                                 },
-                                "caption": "Settings \u2013 User",
-                                "command": "open_file"
+                                "caption": "Settings \u2013 User"
+                            },
+                            { "caption": "-" },
+                            {
+                                "command": "open_file",
+                                "args": {
+                                    "file": "${packages}/Extra Completion/Default (OSX).sublime-keymap",
+                                    "platform": "OSX"
+                                },
+                                "caption": "Key Bindings \u2013 Default"
                             },
                             {
-                                "caption": "-"
+                                "command": "open_file",
+                                "args": {
+                                    "file": "${packages}/Extra Completion/Default (Linux).sublime-keymap",
+                                    "platform": "Linux"
+                                },
+                                "caption": "Key Bindings \u2013 Default"
+                            },
+                            {
+                                "command": "open_file",
+                                "args": {
+                                    "file": "${packages}/Extra Completion/Default (Windows).sublime-keymap",
+                                    "platform": "Windows"
+                                },
+                                "caption": "Key Bindings \u2013 Default"
                             }
                         ]
                     }
