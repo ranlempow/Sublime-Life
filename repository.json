@@ -12,8 +12,8 @@
 			]
 		},
 		{
-			"name": "IntelliDocs (ranlempow)",
-			"details": "https://github.com/ranlempow/Sublime-IntelliDocs",
+			"name": "Extra Completion (ranlempow)",
+			"details": "https://github.com/ranlempow/ExtraCompletion",
 			"releases": [
 				{
 					"sublime_text": "*",
