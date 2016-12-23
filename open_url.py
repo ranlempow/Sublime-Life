@@ -2,8 +2,203 @@
 # Hosted at http://github.com/noahcoad/open-url
 # test urls: google.com ~/tmp ~/tmp/tmp c:\noah c:\noah\tmp.txt c:\noah\tmp
 
-import sublime, sublime_plugin
-import webbrowser, urllib, urllib.parse, threading, re, os, subprocess, platform, socket
+import sublime
+import sublime_plugin
+
+import os
+import platform
+import re
+import socket
+import subprocess
+import threading
+import urllib
+import urllib.parse
+import webbrowser
+
+
+SPEC = {
+    # dir explorer
+    'dir': {
+        'Darwin':       ['open', '<__path__>'],
+        'Linux':        ['nautilus', '--browser', '<__path__>'],
+        'Windows':      ['explorer', '<__path__>']
+    },
+    # file explorer
+    'file': {
+        'Darwin':       ['open', '-R', '<__path__>'],
+        'Linux':        ['nautilus', '--browser', '<__path__>'],
+        'Windows':      ['explorer', '/select,"<__path__>"']
+    },
+    'detech_run': {
+        'Darwin':       ['nohup', '*__path__*'], 
+        'Linux':        ['nohup', '*__path__*'], 
+        'Windows':      ['start', '', '/I', '*__path__*']
+    },
+    # desktop open
+    'open': {
+        'Darwin':       ['open', '<__path__>'],
+        'Linux':        ['xdg-open', '<__path__>'],
+        'Windows':      ['<__path__>'],
+    },
+    'open_with_app': {
+        'Darwin':       ['open', '-a', '<__app__>', '<__path__>']
+    },
+    'run_custom': {
+        'Darwin':       ['*__app__*', '*__path__*']
+        'Linux':        ['*__app__*', '*__path__*']
+        'Windows':      ['*__app__*', '*__path__*']
+    },
+    'shell': {
+        'Darwin':       ['/bin/sh', '-c', '*__path__*'],
+        'Linux':        ['/bin/sh', '-c', '*__path__*'],
+        'Windows':      ['cmd.exe /c "<__path__>"']         # hidden
+    },
+    'shell_keep_open': {
+        'Darwin':       ['/bin/sh', '-c', "'<__path__>; exec /bin/sh'"],
+        'Linux':        ['/bin/sh', '-c', "'<__path__>; exec /bin/sh'"],
+        'Windows':      ['cmd.exe /k "<__path__>"']
+    },
+    # terminal open
+    # terminal_keep_open = terminal + shell_keep_open
+    'terminal': {
+        'Darwin':       ['/opt/X11/bin/xterm', '-e', '*__path__*'],
+        'Linux':        ['/usr/bin/xterm', '-e', '*__path__*'],
+        'Linux2':       ['gnome-terminal', '-x', '*__path__*'],
+        'Windows':      ['cmd.exe /c "<__path__>"']
+    },
+    # termain open with pause after running
+    'pause': {
+        'Darwin':       ['<__path__>; read -p "Press [ENTER] to continue..."'],
+        'Linux':        ['<__path__>; read -p "Press [ENTER] to continue..."'],
+        'Windows':      ['<__path__> & pause']
+    }
+}
+
+class Specification:
+    debug = True
+    def __init__(self, args, hidden=False):
+        self.args = args
+        self.hidden = hidden
+
+    def popen(self, cwd=None):
+        if self.debug:
+            print("open_url debug: %s" % self.args)
+
+        startupinfo = None
+        if self.hidden:
+            from subprocess import STARTUPINFO, _winapi
+            startupinfo = STARTUPINFO()
+            startupinfo.dwFlags |= _winapi.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = _winapi.SW_HIDE
+
+        subprocess.Popen(self.args, cwd=cwd, startupinfo=startupinfo)
+
+    @classmethod
+    def get_spec(cls, intention, path, app=None, terminal=None):
+        if not SPEC.get(intention):
+            raise Exception('unrecognized intention "{}"'.format(intention))
+        if not SPEC[intention].get(platform.system()):
+            raise Exception('unsupported os')
+        spec = SPEC[intention][platform.system()]
+        
+        def merge(target, token, source):
+            if source is None:
+                return target
+            if isinstance(source, cls):
+                source = source.args
+            if not isinstance(source, list):
+                source = [source]
+            merged = []
+            for arg in target:
+                if arg == '*__{}__*'.format(token):
+                    merged.extend(source)
+                else:
+                    merged.append(arg.replace('<__{}__>'.format(token), ' '.join(source)))
+            return merged
+
+        spec = merge(spec, 'path', path)
+        spec = merge(spec, 'app', app)
+        spec = merge(spec, 'terminal', terminal)
+        hidden = intention == 'shell' and platform.system() == 'Windows'
+        return cls(spec, hidden=hidden)
+
+
+class ActionDispitch:
+    # def folder_done(self, idx, opts, folder):
+    #     if idx == 0:
+    #         self.reveal(folder)
+    #     elif idx == 1:
+    #         # add folder to project
+    #         d = self.view.window().project_data()
+    #         if not d: d = {}
+    #         if not 'folders' in d: d['folders'] = []
+    #         d['folders'].append({'path': folder})
+    #         self.view.window().set_project_data(d)
+    #     elif idx == 2:
+    #         self.open_in_new_window(folder)
+
+    def get_spec(self, *args, **kwargs):
+        return Specification.get_spec(*args, **kwargs)
+
+    def reveal(self, path):
+        spec = self.get_spec('dir' if os.path.isdir(path) else 'file', path)
+        spec.popen()
+
+    def runfile(self, autoinfo, path):        
+        if autoinfo.get('openwith'):
+            # check if there are special instructions to open this file
+            spec = self.get_spec('run_custom', path, app=autoinfo['openwith'])
+        else:
+            if autoinfo.get('app'):
+                # OSX only
+                spec = self.get_spec('open_with_app', path, app=autoinfo['app'])
+            else:
+                # default methods to open files
+                spec = self.get_spec('open', path)
+
+        # run command in a terminal and pause if desired
+        if autoinfo.get('terminal'):
+            if autoinfo.get('pause'):
+                spec = self.get_spec('pause', spec)
+            if autoinfo.get('keep_open'):
+                spec = self.get_spec('shell_keep_open', spec)
+            spec = self.get_spec('terminal', spec)
+            
+        # open the file on a seperate thread?
+        spec.popen()
+
+    def system_open(self, path):
+        spec = self.get_spec('detech_run', path)
+        spec.popen(cwd=os.path.dirname(path))
+
+
+    def open_in_new_window(self, path):
+        items = []
+
+        executable_path = sublime.executable_path()
+
+        if sublime.platform() == 'osx':
+            app_path = executable_path[:executable_path.rfind(".app/")+5]
+            executable_path = app_path+"Contents/SharedSupport/bin/subl"
+
+        # build arguments
+        path = os.path.abspath(path)
+        items.append(executable_path)
+        if os.path.isfile(path): 
+            items.append(os.path.dirname(path))
+        items.append(path)
+
+        subprocess.Popen(items, cwd=items[1])
+
+    def add_folder_to_project(self, path):
+        d = self.view.window().project_data()
+        if not d: d = {}
+        if not 'folders' in d: d['folders'] = []
+        d['folders'].append({'path': path})
+        self.view.window().set_project_data(d)
+
+
+
 
 class OpenUrlMoreCommand(sublime_plugin.TextCommand):
 
@@ -57,7 +252,7 @@ class OpenUrlMoreCommand(sublime_plugin.TextCommand):
         elif os.path.exists(os.path.expandvars(url)):
             self.choose_action(os.path.expandvars(url))
         
-        elif os.name == 'posix' and os.path.exists(os.path.expanduser(url)):
+        elif os.path.exists(os.path.expanduser(url)):
             self.choose_action(os.path.expanduser(url))
         
         elif relative_path and os.path.exists(relative_path):
@@ -66,18 +261,14 @@ class OpenUrlMoreCommand(sublime_plugin.TextCommand):
         else:
             if "://" in url:
                 webbrowser.open_new_tab(url)
-            elif re.search(r"\w[^\s]*\.(?:%s)[^\s]*\Z" % self.domains, url, re.IGNORECASE):
+            elif re.search(r"\w[^\s]*\.(?:%s)[^\s]*\Z" % (self.domains, url), re.IGNORECASE):
                 if not "://" in url:
                     url = "http://" + url
                 webbrowser.open_new_tab(url)
             else:
                 url = "http://google.com/#q=" + urllib.parse.quote(url, '')
                 webbrowser.open_new_tab(url)
-
-    def locfile(url):
-        pass
-        # os.path.expandvars(url)
-        # re.sub(r'\%(\w+)\%', r'${\1}',
+    
 
     # pulls the current selection or url under the cursor
     def selection(self):
