@@ -87,22 +87,43 @@ class OpenUrlMoreCommand(sublime_plugin.TextCommand):
         start = s.a
         end = s.b
 
+        # new method to strongly enhance finding path-like string
+        
+        # match absolute path ex: c:/xxx, E:\xxx, /xxx
+        # this match is accept only one space inside word
+        abs_url = r'([A-Z]:)?[\\/](?:[^ ]| (?! |https?:))*'
+        
+        # match url path ex: http://xxx, xxx/xxx, xxx\xxx
+        # this match not accept space
+        file_url = r'(https?://)?([^ \\/]+[\\/])+([^ \\/]+)?'
+        
+        # unfold surrounding symbol
+        merge_url = r'(\[)?(\()?(?P<url>{0})(?(2)\))(?(1)\])'
+
+        # compose those matches together
+        url_pattern = re.compile(merge_url.format('|'.join([abs_url, file_url])), re.I)
+
+
         # if nothing is selected, expand selection to nearest terminators
-        if (start == end): 
-            view_size = self.view.size()
-            terminator = list('\t\"\'><, []()')
+        if (start == end):
+            line_region = self.view.line(start)
+            terminator = list('\t\"\'><,;')
 
             # move the selection back to the start of the url
-            while (start > 0
-                    and not self.view.substr(start - 1) in terminator
-                    and self.view.classify(start) & sublime.CLASS_LINE_START == 0):
+            while (start > line_region.a
+                   and not self.view.substr(start - 1) in terminator):
                 start -= 1
 
             # move end of selection forward to the end of the url
-            while (end < view_size
-                    and not self.view.substr(end) in terminator
-                    and self.view.classify(end) & sublime.CLASS_LINE_END == 0):
+            while (end < line_region.b
+                   and not self.view.substr(end) in terminator):
                 end += 1
+
+            url = self.view.substr(sublime.Region(start, end))
+            for match in url_pattern.finditer(url):
+                # make sure match at the cursor position
+                if match.span('url')[0] < s.a - line_region.a < match.span('url')[1]:
+                    return match.group('url') 
 
         # grab the URL
         return self.view.substr(sublime.Region(start, end)).strip()
