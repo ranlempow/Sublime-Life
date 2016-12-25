@@ -14,3 +14,7 @@ C:\Noah\Projects\people\ChrisFritchie\ChrisFritchie.sublime-project
 ~/tmp
 /etc
 ~/
+.\open_url.sublime-settings
+C:\Users\ran\Desktop\midash\midash-project.sublime-project
+C:\python34\lua51.dll
+C:\python34
