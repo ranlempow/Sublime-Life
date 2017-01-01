@@ -1,0 +1,4 @@
+Welcome to Sublime Life
+=======================
+
+all installation is finished, please restart sublime text.

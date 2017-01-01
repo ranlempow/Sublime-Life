@@ -1,8 +1,11 @@
+
+
 import sublime
 import sublime_plugin
 from package_control.package_disabler import PackageDisabler
 from package_control.package_manager import PackageManager
 from package_control.settings import preferences_filename, load_list_setting
+
 
 class GitGutterSwitch:
     def __init__(self):
@@ -30,27 +33,27 @@ class GitGutterSwitch:
                 showdiff._update_status(0, 0, 0, "", "")
             self.pkg_disabler.disable_packages('GitGutter', 'disable')
 
-switcher = None
-
 
 def plugin_loaded():
-    global switcher
     switcher = GitGutterSwitch()
-    sublime.set_timeout(lambda :switcher.disable(), 2500)
+    sublime.set_timeout(lambda: switcher.disable(), 2500)
 
 
 class EnableGitGutterCommand(sublime_plugin.WindowCommand):
     def run(self):
+        switcher = GitGutterSwitch()
         switcher.enable()
 
 
 class DisableGitGutterCommand(sublime_plugin.WindowCommand):
     def run(self):
+        switcher = GitGutterSwitch()
         switcher.disable()
 
 
 class ToggleGitGutterCommand(sublime_plugin.WindowCommand):
     def run(self):
+        switcher = GitGutterSwitch()
         if switcher.is_enable():
             switcher.disable()
         else:

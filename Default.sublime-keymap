@@ -1,4 +1,18 @@
 [
-	{ "keys": ["ctrl+alt+w"], "command": "close_workspace" },
-	{ "keys": ["f5"], "command": "toggle_git_gutter"}
+	{ "keys": ["ctrl+alt+f6"], "command": "google_spell_check" },
+	{ "keys": ["alt+t"], "command": "todo_review", "args": { "open_files": true } },	
+	{ "keys": ["f10"], "command": "toggle_linter" },
+
+	{ "keys": ["ctrl+keypad_plus"], "command": "jump_forward" },
+	{ "keys": ["ctrl+keypad_minus"], "command": "jump_back" },
+
+	{ "keys": ["alt+up"], "command": "move", "args": {"by": "lines", "forward": false} },
+	{ "keys": ["alt+down"], "command": "move", "args": {"by": "lines", "forward": true} },
+	{ "keys": ["alt+shift+up"], "command": "move", "args": {"by": "lines", "forward": false, "extend": true} },
+	{ "keys": ["alt+shift+down"], "command": "move", "args": {"by": "lines", "forward": true, "extend": true} },
+	{ "keys": ["alt+backspace"], "command": "delete_word", "args": { "forward": false } },
+	{ "keys": ["alt+delete"], "command": "delete_word", "args": { "forward": true } },
+	
+	{ "keys": ["ctrl+alt+v"], "command": "paste_from_history" }
+
 ]
