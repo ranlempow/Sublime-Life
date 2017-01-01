@@ -52,6 +52,10 @@ def plugin_loaded():
     if tool_settings.get("bootstrapped") is True:
         return
 
+    base_settings = sublime.load_settings('Preferences.sublime-settings')
+    base_settings.set("ignored_packages", ["Markdown"])
+    sublime.save_settings('Preferences.sublime-settings')
+
     pkgs = [
         "Boxy Theme",
         "Boxy Theme Addon - Font Face",
@@ -77,7 +81,8 @@ def plugin_loaded():
             "highlight_line": True,
             "ignored_packages":
             [
-                "GitGutter",
+                "Markdown",      # must disable for MarkdownEditing
+                "GitGutter",     # disable by default
                 "Vintage"
             ],
             "indent_to_bracket": True,
@@ -87,14 +92,14 @@ def plugin_loaded():
             "theme_tab_font_sm": True,
             "theme_tab_size_md": True
         }
-        base_settings = sublime.load_settings('Preferences.sublime-settings')
+        
         for key, value in defaults.items():
             base_settings.set(key, value)
         sublime.save_settings('Preferences.sublime-settings')
 
         tool_settings.set("bootstrapped", True)
         sublime.save_settings('RansTool.sublime-settings')
-
+        sublime.active_window().status_message("Sublime Life is successful installed")
 
     chain_install(pkgs, after_installation)
 
