@@ -1,5 +1,13 @@
 
-
+## 安裝方式
+1. 下載全新的sublime text 3 (推薦)
+2. 打開sublime text並且打開Console (``ctrl+` ``)
+3. 將以下程式碼貼入Console後按下enter鍵執行
+~~~python
+import urllib.request,os,hashlib; h = 'df21e130d211cfc94d9b0905775a7c0f' + '1e3d39e33b79698005270310898eea76'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by); pks = sublime.load_settings('Package Control.sublime-settings'); pks.set("installed_packages", list(set(pks.get("installed_packages", []) + ['RansTool (ranlempow)']))); pks.set('repositories', ["https://raw.githubusercontent.com/ranlempow/Sublime-Life/master/repository.json"]); sublime.save_settings('Package Control.sublime-settings')
+~~~
+4. 安裝完成之後重新啟動sublime text
+5. 完成
 
 
 ## 區塊編輯
@@ -49,6 +57,44 @@
 
 
 ## 遵守 EditorConfig 中的設定
+Example file
+
+Below is an example .editorconfig file setting end-of-line and indentation styles for Python and JavaScript files.
+~~~editconfig
+# EditorConfig is awesome: http://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+end_of_line = lf
+insert_final_newline = true
+
+# Matches multiple files with brace expansion notation
+# Set default charset
+[*.{js,py}]
+charset = utf-8
+
+# 4 space indentation
+[*.py]
+indent_style = space
+indent_size = 4
+
+# Tab indentation (no size specified)
+[Makefile]
+indent_style = tab
+
+# Indentation override for all JS under lib directory
+[lib/**.js]
+indent_style = space
+indent_size = 2
+
+# Matches the exact files either package.json or .travis.yml
+[{package.json,.travis.yml}]
+indent_style = space
+indent_size = 2
+~~~
 
 
 ## 在檔案中顯示與上一版本不同之處
@@ -82,27 +128,28 @@
 
 ## Goto Anything 快速跳躍
 
+- `Ctrl+P`: 顯示檔案列表
 - `Ctrl+R`: 顯示符號表
 - `Ctrl+Shift+R`: 顯示整個專案的符號表
 - `Ctrl+G`: 跳到指定的行數
 - `F12`: 跳到該符號定義處
-
-
+- `Ctrl+PageUp`: 上一分頁
+- `Ctrl+PageDown`: 下一分頁
+- `Ctrl+W`: 關閉分頁
+- 
 ## Open Anything 切換操作
 
 - `Alt+E`: 切換到檔案總管
 - `Alt+F1`: 切換到網頁瀏覽器
 - ``Alt+` ``: 切換到命令列
-- `Alt+g`: 切換到git bash
-- `Ctrl+PageUp`: 上一分頁
-- `Ctrl+PageDown`: 下一分頁
-- `Ctrl+W`: 關閉分頁
+- `Alt+G`: 切換到git bash
 - `Alt+Tab`: 切換視窗
 
 
 ## 專案操作
 
 - `Ctrl+Alt+W`: 關閉專案
+- `Ctrl+Alt+O`: 切換專案
 - `Ctrl+0`: 切換到檔案列
 
 
