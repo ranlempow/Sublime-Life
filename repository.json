@@ -6,8 +6,10 @@
 			"details": "https://github.com/ranlempow/open-url",
 			"releases": [
 				{
-					"sublime_text": "*",
-					"tags": true
+					"version": "1.1.0",
+					"url": "https://github.com/ranlempow/open-url/archive/v1.1.0.zip",
+					"date": "2017-01-01 08:03:10",
+					"sublime_text": "*"
 				}
 			]
 		},
@@ -16,8 +18,10 @@
 			"details": "https://github.com/ranlempow/ExtraCompletion",
 			"releases": [
 				{
-					"sublime_text": "*",
-					"tags": true
+					"version": "1.6.0",
+					"url": "https://github.com/ranlempow/ExtraCompletion/archive/1.6.0.zip",
+					"date": "2017-01-01 08:03:10",
+					"sublime_text": "*"
 				}
 			]
 		},
@@ -26,8 +30,10 @@
 			"details": "https://github.com/ranlempow/SublimeLinter-CleanCode",
 			"releases": [
 				{
-					"sublime_text": "*",
-					"tags": true
+					"version": "1.0.0",
+					"url": "https://github.com/ranlempow/SublimeLinter-CleanCode/archive/v1.0.0.zip",
+					"date": "2017-01-01 08:03:10",
+					"sublime_text": "*"
 				}
 			]
 		},
@@ -36,8 +42,10 @@
 			"details": "https://github.com/ranlempow/Sublime-RansTool",
 			"releases": [
 				{
-					"sublime_text": "*",
-					"tags": true
+					"version": "1.2.0",
+					"url": "https://github.com/ranlempow/Sublime-RansTool/archive/v1.2.0.zip",
+					"date": "2017-01-01 08:03:10",
+					"sublime_text": "*"
 				}
 			]
 		},
@@ -46,8 +54,10 @@
 			"details": "https://github.com/ranlempow/Ancient",
 			"releases": [
 				{
-					"sublime_text": "*",
-					"tags": true
+					"version": "1.0.0",
+					"url": "https://github.com/ranlempow/Ancient/archive/v1.0.0.zip",
+					"date": "2017-01-01 08:03:10",
+					"sublime_text": "*"
 				}
 			]
 		}
