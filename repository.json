@@ -42,10 +42,8 @@
 			"details": "https://github.com/ranlempow/Sublime-RansTool",
 			"releases": [
 				{
-					"version": "1.2.0",
-					"url": "https://github.com/ranlempow/Sublime-RansTool/archive/v1.2.0.zip",
-					"date": "2017-01-01 08:03:10",
-					"sublime_text": "*"
+					"sublime_text": "*",
+					"tags": true
 				}
 			]
 		},
