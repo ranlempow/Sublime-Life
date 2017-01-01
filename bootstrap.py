@@ -1,7 +1,6 @@
+# noqa: V, D
 import sublime
 import sublime_plugin
-import os
-from queue import Queue
 
 from package_control.package_installer import PackageInstallerThread
 from package_control.thread_progress import ThreadProgress
@@ -12,8 +11,9 @@ from package_control.package_disabler import PackageDisabler
 class MakeOneLineCodeCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         code = self.view.substr(self.view.sel()[0])
-        lines = [ln.strip('\t ') for ln in code.split('\n')]
+        lines = [ln.strip('\t ') for ln in code.split('\n') if not ln.strip('\t ').startswith('#')]
         sublime.set_clipboard('; '.join(lines))
+
 
 def install(package, on_complete):
     disabler = PackageDisabler()
@@ -30,11 +30,13 @@ def install(package, on_complete):
     ThreadProgress(
         thread,
         'Installing package %s' % package,
-        'Package %s successfully %s' % (package, disabler.completion_type)
+        'Package %s successfully installed' % package
     )
+
 
 def chain_install(packages, on_complete=None):
     queue = packages[:]
+    
     def launch_next():
         if queue:
             package = queue.pop(0)
@@ -50,9 +52,6 @@ def plugin_loaded():
     if tool_settings.get("bootstrapped") is True:
         return
 
-
-    # pks_settings = sublime.load_settings('Package Control.sublime-settings')
-    # installed = pks_settings.get("installed_packages", [])
     pkgs = [
         "Boxy Theme",
         "Boxy Theme Addon - Font Face",
@@ -66,12 +65,9 @@ def plugin_loaded():
         "Open Anything (ranlempow)",
         "Extra Completion (ranlempow)",
         "SublimeLinter-CleanCode (ranlempow)",
-        "RansTool (ranlempow)",
         "Ancient (ranlempow)"
     ]
-    # pks_settings.set("installed_packages", list(set(installed + pkgs)))
-    # sublime.save_settings('Package Control.sublime-settings')
-
+    
     def after_installation():
         defaults = {
             "color_scheme": "Packages/Ancient (ranlempow)/Ancient.tmTheme",
@@ -98,9 +94,6 @@ def plugin_loaded():
 
         tool_settings.set("bootstrapped", True)
         sublime.save_settings('RansTool.sublime-settings')
-
-        # welcome_file = os.path.join(sublime.packages_path(), 'Sublime-RansTool', 'welcome.txt')
-        # sublime.active_window().open_file(welcome_file)
 
 
     chain_install(pkgs, after_installation)
