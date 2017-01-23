@@ -2,5 +2,9 @@
 	{
 		"caption": "Make One Line Code",
 		"command": "make_one_line_code"
+	},
+	{
+		"caption": "Choose Font",
+		"command": "choose_font"
 	}
 ]
