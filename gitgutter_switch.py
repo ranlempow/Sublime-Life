@@ -23,6 +23,7 @@ class GitGutterSwitch:
             self.pkg_disabler.reenable_package('GitGutter', 'enable')
             for view in sublime.active_window().views():
                 view.run_command("git_gutter")
+            sublime.active_window().status_message("GitGutter is enabled")
 
     def disable(self):
         if self.installed and self.is_enable():
@@ -32,6 +33,7 @@ class GitGutterSwitch:
                 showdiff._clear_all()
                 showdiff._update_status(0, 0, 0, "", "")
             self.pkg_disabler.disable_packages('GitGutter', 'disable')
+            sublime.active_window().status_message("GitGutter is disabled")
 
 
 def plugin_loaded():

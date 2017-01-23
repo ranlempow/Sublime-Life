@@ -26,8 +26,8 @@ class LinterSwitch:
             view = self.window.active_view()
             self.window.run_command('sublimelinter_toggle_setting',
                                     {'setting': '@disable', 'value': None})
-            # view.run_command('sublimelinter_lint')
             view.run_command('save')
+            sublime.active_window().status_message("SublimeLinter is enabled")
             
 
     def disable(self):
@@ -35,6 +35,7 @@ class LinterSwitch:
             self.window.run_command('sublimelinter_toggle_setting',
                                     {'setting': '@disable', 'value': True})
             self.linter.Linter.clear_all()
+            sublime.active_window().status_message("SublimeLinter is disabled")
 
 
 class ToggleLinterCommand(sublime_plugin.WindowCommand):
