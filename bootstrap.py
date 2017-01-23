@@ -52,9 +52,9 @@ def plugin_loaded():
     if tool_settings.get("bootstrapped") is True:
         return
 
-    base_settings = sublime.load_settings('Preferences.sublime-settings')
-    base_settings.set("ignored_packages", ["Markdown"])
-    sublime.save_settings('Preferences.sublime-settings')
+    # base_settings = sublime.load_settings('Preferences.sublime-settings')
+    # base_settings.set("ignored_packages", ["Markdown"])
+    # sublime.save_settings('Preferences.sublime-settings')
 
     pkgs = [
         "Boxy Theme",
@@ -93,10 +93,12 @@ def plugin_loaded():
             "theme_tab_size_md": True
         }
         
+        base_settings = sublime.load_settings('Preferences.sublime-settings')
         for key, value in defaults.items():
             base_settings.set(key, value)
         sublime.save_settings('Preferences.sublime-settings')
 
+        tool_settings = sublime.load_settings('RansTool.sublime-settings')
         tool_settings.set("bootstrapped", True)
         sublime.save_settings('RansTool.sublime-settings')
         sublime.active_window().status_message("Sublime Life is successful installed")
