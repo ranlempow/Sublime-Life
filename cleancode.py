@@ -174,7 +174,6 @@ def runUnitTest(target, run_doctest=True):
                                'col': 1,
                                'code': 'U202',
                                'text': repr(error_value)})
-
     cov.stop()
 
     warns = []
@@ -227,7 +226,7 @@ def runUnitTest(target, run_doctest=True):
 
 
 pep8_format = '%(path)s:%(row)d:%(col)d: %(code)s %(text)s'
-noqa = re.compile(r'\s*# noqa[:=]\s*([ ,a-zA-Z0-9]*)', re.I).search
+noqa = re.compile(r'^\s*# noqa[:=]\s*([ ,a-zA-Z0-9]*)', re.I).search
 doctest_regex = re.compile(r'File "(.*?)", line (\d+), in (.*?)\n'
                            r'Failed example:\n\s+.*?\n'
                            r'Expected:\n\s+(.*?)\n'
