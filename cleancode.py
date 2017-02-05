@@ -1,4 +1,4 @@
-# noqa: cov, E501
+# noqa: cov, E501, D
 import os
 import sys
 import unittest
@@ -159,13 +159,12 @@ def runUnitTest(target, run_doctest=True):
             warns_list.append((message, traceback.extract_stack()))
 
         warnings.showwarning = warn_record_traceback
+        result.startTestRun()
         try:
             test, doctests = loadTarget(target)
-            result.startTestRun()
             test.run(result)
             if doctests and run_doctest:
                 doctests.run(result)
-            result.stopTestRun()
         except:
             error_type, error_value, error_traceback = sys.exc_info()
             filename, lineno, funcname, line = matchFileInTraceback(target, error_traceback)
@@ -174,6 +173,9 @@ def runUnitTest(target, run_doctest=True):
                                'col': 1,
                                'code': 'U202',
                                'text': repr(error_value)})
+        finally:
+            result.stopTestRun()
+
     cov.stop()
 
     warns = []
@@ -185,7 +187,6 @@ def runUnitTest(target, run_doctest=True):
                       'code': 'U101',
                       'text': message})
 
-    
     for test, (error_type, error_value, error_traceback) \
             in result.unsuccess_list:
         casefile, caselineno, casename, is_doctest = getTestCaseLine(test)
@@ -226,7 +227,6 @@ def runUnitTest(target, run_doctest=True):
 
 
 pep8_format = '%(path)s:%(row)d:%(col)d: %(code)s %(text)s'
-noqa = re.compile(r'^\s*# noqa[:=]\s*([ ,a-zA-Z0-9]*)', re.I).search
 doctest_regex = re.compile(r'File "(.*?)", line (\d+), in (.*?)\n'
                            r'Failed example:\n\s+.*?\n'
                            r'Expected:\n\s+(.*?)\n'
@@ -234,34 +234,52 @@ doctest_regex = re.compile(r'File "(.*?)", line (\d+), in (.*?)\n'
                            ).search
 
 
-def formatAndFilterErrors(noqas, errors):
+def formatAndFilterErrors(noqas, inline_noqas, errors):
     cwd = os.getcwd()
     for error in errors:
-        if all(not error['code'].startswith(noqa) for noqa in noqas):
+        inline_noqa = inline_noqas.get(error['row'], None)
+        if inline_noqa is True:
+            continue
+
+        if all(not error['code'].startswith(noqa) for noqa in noqas) \
+           or (inline_noqa is not None
+               and all(not error['code'].startswith(noqa) for noqa in inline_noqa)):
             error = error.copy()
             error['path'] = os.path.relpath(error['path'], cwd)
             yield pep8_format % error
 
 
-def runIter(target):
+def runIter(target, noqas=None):
+    noqa = re.compile(r'^\s*# noqa[:=]\s*([ ,a-zA-Z0-9]*)', re.I).search
+    inline_noqa = re.compile(r'^.+?# noqa[:=]\s*([ ,a-zA-Z0-9]*)', re.I).search
+    inline_noqa_all_ignored = re.compile(r'^.+?# noqa\s*$', re.I).search
+
+    noqas = noqas or []
+    inline_noqas = {}
     with open(target, encoding='utf-8') as fp:
-        matches = [noqa(line).group(1).split(',') for line in fp if noqa(line)]
-        noqas = [word.strip() for match in matches for word in match]
-    
+        for lineno_minus_one, line in enumerate(fp):
+            lineno = lineno_minus_one + 1
+            if noqa(line):
+                noqas.extend(word.strip() for word in noqa(line).group(1).split(','))
+            elif inline_noqa(line):
+                inline_noqas[lineno] = [word.strip() for word in inline_noqa(line).group(1).split(',')]
+            elif inline_noqa_all_ignored(line):
+                inline_noqas[lineno] = True
+
     if 'pep8' not in noqas and 'flake8' not in noqas:
         errors = runFlake8(target)
         if errors:
-            yield from formatAndFilterErrors(noqas, errors)
+            yield from formatAndFilterErrors(noqas, inline_noqas, errors)
 
     warns, testerrors, missings = runUnitTest(target, run_doctest='doctest' not in noqas)
     if 'test' not in noqas and (warns or testerrors):
-        yield from formatAndFilterErrors(noqas, warns + testerrors)
+        yield from formatAndFilterErrors(noqas, inline_noqas, warns + testerrors)
     elif 'cov' not in noqas:
-        yield from formatAndFilterErrors(noqas, missings)
+        yield from formatAndFilterErrors(noqas, inline_noqas, missings)
 
 
-def runAndPrint(target):
-    for line in runIter(target):
+def runAndPrint(target, noqas=None):
+    for line in runIter(target, noqas):
         print(line)
 
 
