@@ -594,6 +594,21 @@ meta.separator.markdown {
 }
 
 
+// find-in-files syntax
+entity.name.filename.find-in-files {
+    @name "Find In Files: filename";
+    foreground: colr($type);
+}
+// same as number
+// constant.numeric.line-number.find-in-files {
+//     @name "Find In Files: Line Number";
+//     foreground: colr($comm);
+// }
+constant.numeric.line-number.match.find-in-files {
+    @name "Find In Files: Line Number - Match";
+    foreground: colr($lang);
+}
+
 
 // Javascript Bable
 // ----------------

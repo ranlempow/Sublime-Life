@@ -273,6 +273,17 @@
 		</dict>
 		<dict>
 			<key>name</key>
+			<string>Library keyword</string>
+			<key>scope</key>
+			<string>support.keyword</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#ffa154</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
 			<string>Library constant</string>
 			<key>scope</key>
 			<string>support.constant - support.constant.magic</string>
@@ -319,7 +330,7 @@
 			<key>name</key>
 			<string>Library type</string>
 			<key>scope</key>
-			<string>support.type, support support.class</string>
+			<string>support.type, support.class</string>
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
@@ -339,9 +350,31 @@
 		</dict>
 		<dict>
 			<key>name</key>
-			<string>Keyword control</string>
+			<string>Library module</string>
+			<key>scope</key>
+			<string>support.module</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#925aa1</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Keyword</string>
 			<key>scope</key>
 			<string>keyword</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#ffa154</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Keyword control</string>
+			<key>scope</key>
+			<string>keyword.operator.keyword</string>
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
@@ -1024,6 +1057,28 @@
 			<dict>
 				<key>foreground</key>
 				<string>#647478</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Find In Files: filename</string>
+			<key>scope</key>
+			<string>entity.name.filename.find-in-files</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#2aca72</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Find In Files: Line Number - Match</string>
+			<key>scope</key>
+			<string>constant.numeric.line-number.match.find-in-files</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#ffc235</string>
 			</dict>
 		</dict>
 	</array>
