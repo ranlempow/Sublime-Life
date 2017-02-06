@@ -1081,6 +1081,105 @@
 				<string>#ffc235</string>
 			</dict>
 		</dict>
+		<dict>
+			<key>name</key>
+			<string>Diff inserted</string>
+			<key>scope</key>
+			<string>markup.inserted</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#4180b3</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Diff deleted</string>
+			<key>scope</key>
+			<string>markup.deleted</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#d7423d</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Diff changed</string>
+			<key>scope</key>
+			<string>markup.changed</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#ffa154</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Diff from file</string>
+			<key>scope</key>
+			<string>meta.diff.header.from-file</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#2aca72</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Diff from file punctuation</string>
+			<key>scope</key>
+			<string>meta.diff.header.from-file punctuation.definition</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#9c9a78</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Diff to file</string>
+			<key>scope</key>
+			<string>meta.diff.header.to-file</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#57dcb4</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Diff to file punctuation</string>
+			<key>scope</key>
+			<string>meta.diff.header.to-file punctuation.definition</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#9c9a78</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Diff range</string>
+			<key>scope</key>
+			<string>meta.diff.range</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#b98d82</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Diff range punctuation</string>
+			<key>scope</key>
+			<string>meta.diff.range punctuation.definition</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#9c9a78</string>
+			</dict>
+		</dict>
 	</array>
 	<key>uuid</key>
 	<string>F8D71E9B-7AB9-48B3-8E5D-E61ADEBDFDEF</string>

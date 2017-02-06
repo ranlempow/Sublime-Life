@@ -610,6 +610,46 @@ constant.numeric.line-number.match.find-in-files {
 }
 
 
+// diff syntax
+markup.inserted {
+    @name "Diff inserted";
+    foreground: colr($str);
+}
+markup.deleted {
+    @name "Diff deleted";
+    foreground: colr($deffun);
+}
+markup.changed {
+    @name "Diff changed";
+    foreground: colr($keyw);
+}
+
+meta.diff.header.from-file {
+    @name "Diff from file";
+    foreground: colr($type);
+    punctuation.definition {
+        @name "Diff from file punctuation";
+        foreground: colr($punc);
+    }
+}
+meta.diff.header.to-file {
+    @name "Diff to file";
+    foreground: colr($func);
+    punctuation.definition {
+        @name "Diff to file punctuation";
+        foreground: colr($punc);
+    }
+}
+meta.diff.range {
+    @name "Diff range";
+    foreground: colr($item);
+    punctuation.definition {
+        @name "Diff range punctuation";
+        foreground: colr($punc);
+    }
+}
+
+
 // Javascript Bable
 // ----------------
 
