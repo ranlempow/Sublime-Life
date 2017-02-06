@@ -553,22 +553,27 @@ markup.raw.inline, markup.raw.block, punctuation.definition.raw {
 }
 
 
-// punctuation.definition.heading
 // entity.name.section
 // markup.heading.\1
 // markup.heading
+
+// punctuation.definition.heading {
+//     @name "Markup heading punctuation";
+//     foreground: colr($keyw);
+// }
 markup.heading, entity.name.section {
     @name "Markup heading";
-    foreground: colr($call);
+    foreground: colr($defcls);
+    background: colr($emphbk);
 }
 
 markup.list.unnumbered, markup.list.numbered {
-
-}
-
-punctuation.definition.list_item {
     @name "Markup list";
-    foreground: colr($call);
+    foreground: colr($light);
+}
+punctuation.definition.list_item {
+    @name "Markup list punctuation";
+    foreground: colr($assign);
 }
 
 markup.quote {
@@ -578,7 +583,7 @@ markup.quote {
 punctuation.definition.blockquote {
     @name "Markup quote punctuation";
     foreground: colr($comm);
-    background: colr($comm);
+    background: colr($commbk);
 }
 
 

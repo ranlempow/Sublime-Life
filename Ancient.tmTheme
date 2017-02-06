@@ -998,19 +998,32 @@
 			<string>markup.heading, entity.name.section</string>
 			<key>settings</key>
 			<dict>
+				<key>background</key>
+				<string>#26221f</string>
 				<key>foreground</key>
-				<string>#FFFFFF</string>
+				<string>#e5622e</string>
 			</dict>
 		</dict>
 		<dict>
 			<key>name</key>
 			<string>Markup list</string>
 			<key>scope</key>
+			<string>markup.list.unnumbered, markup.list.numbered</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#e9d8ca</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Markup list punctuation</string>
+			<key>scope</key>
 			<string>punctuation.definition.list_item</string>
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#FFFFFF</string>
+				<string>#c8844c</string>
 			</dict>
 		</dict>
 		<dict>
@@ -1032,7 +1045,7 @@
 			<key>settings</key>
 			<dict>
 				<key>background</key>
-				<string>#647478</string>
+				<string>#1f1c18</string>
 				<key>foreground</key>
 				<string>#647478</string>
 			</dict>
