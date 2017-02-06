@@ -36,7 +36,7 @@ def install(package, on_complete):
 
 def chain_install(packages, on_complete=None):
     queue = packages[:]
-    
+
     def launch_next():
         if queue:
             package = queue.pop(0)
@@ -71,7 +71,7 @@ def plugin_loaded():
         "SublimeLinter-CleanCode (ranlempow)",
         "Ancient (ranlempow)"
     ]
-    
+
     def after_installation():
         defaults = {
             "color_scheme": "Packages/Ancient (ranlempow)/Ancient.tmTheme",
@@ -92,11 +92,25 @@ def plugin_loaded():
             "theme_tab_font_sm": True,
             "theme_tab_size_md": True
         }
-        
+
         base_settings = sublime.load_settings('Preferences.sublime-settings')
         for key, value in defaults.items():
             base_settings.set(key, value)
         sublime.save_settings('Preferences.sublime-settings')
+
+        # Add to Markdown.sublime-settings
+        # this is a hack to solve MarkdownEditing config problem
+        markdown_settings = sublime.load_settings('Markdown.sublime-settings')
+        md_defaults = {
+            "color_scheme": "Packages/User/SublimeLinter/Ancient (SL).tmTheme",
+            "draw_centered": False,
+            "highlight_line": True,
+            "line_numbers": True,
+            "margin": 32
+        }
+        for key, value in md_defaults.items():
+            markdown_settings.set(key, value)
+        sublime.save_settings('Markdown.sublime-settings')
 
         tool_settings = sublime.load_settings('RansTool.sublime-settings')
         tool_settings.set("bootstrapped", True)
@@ -104,4 +118,3 @@ def plugin_loaded():
         sublime.active_window().status_message("Sublime Life is successful installed")
 
     chain_install(pkgs, after_installation)
-
