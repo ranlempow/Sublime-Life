@@ -1,13 +1,15 @@
 
 ## 安裝方式
-1. 下載全新的sublime text 3 (推薦)
-2. 打開sublime text並且打開Console (``ctrl+` ``)
-3. 將以下程式碼貼入Console後按下enter鍵執行
+1. 從官方網站下載Sublime Text 3 (推薦從全新的Sublime Text 3開始安裝)
+2. 打開Sublime Text並且打開Console (按下``ctrl+` ``)
+3. 將以下程式碼貼入Console的命令列後按下enter鍵來執行
 ~~~python
-import urllib.request,os,hashlib; h = 'df21e130d211cfc94d9b0905775a7c0f' + '1e3d39e33b79698005270310898eea76'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by); pks = sublime.load_settings('Package Control.sublime-settings'); pks.set("installed_packages", list(set(pks.get("installed_packages", []) + ['RansTool (ranlempow)']))); pks.set('repositories', ["https://raw.githubusercontent.com/ranlempow/Sublime-Life/master/repository.json"]); sublime.save_settings('Package Control.sublime-settings')
+import urllib.request,os,hashlib; h = 'df21e130d211cfc94d9b0905775a7c0f' + '1e3d39e33b79698005270310898eea76'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by); pks = sublime.load_settings('Package Control.sublime-settings'); pks.set("installed_packages", list(set(pks.get("installed_packages", []) + ['RansTool (ranlempow)']))); pks.set('repositories', ["https://raw.githubusercontent.com/ranlempow/Sublime-Life/master/repository.json"]); sublime.save_settings('Package Control.sublime-settings'); sublime.set_timeout(lambda: sublime.message_dialog("Please restart Sublime Text to continuity install Sublime Life"), 500)
 ~~~
-4. 安裝完成之後重新啟動sublime text
-5. 完成
+4. 確認提是視窗後重新啟動Sublime Text
+5. 過幾秒之後會開始一連串的安裝, 請耐心等待完成之後即可使用Sublime Life.
+
+
 
 
 ## 區塊編輯
@@ -57,6 +59,9 @@ import urllib.request,os,hashlib; h = 'df21e130d211cfc94d9b0905775a7c0f' + '1e3d
 
 
 ## 遵守 EditorConfig 中的設定
+
+對UTF-8有著高度的支援
+
 Example file
 
 Below is an example .editorconfig file setting end-of-line and indentation styles for Python and JavaScript files.
@@ -114,6 +119,18 @@ indent_size = 2
 
 - `F10`: 開啟或關閉錯誤顯示, 並且存檔
 
+遵守`tox.ini`
+~~~
+[flake8]
+# E303    too many blank lines (3)
+# E306    expected 1 blank line before a nested definition
+# W293    blank line contains whitespace
+# W391    blank line at end of file
+ignore = E303,E306,W293,W391
+
+max-line-length = 120
+~~~
+
 
 ## 函數變色
 
@@ -149,7 +166,7 @@ indent_size = 2
 ## 專案操作
 
 - `Ctrl+Alt+W`: 關閉專案
-- `Ctrl+Alt+O`: 切換專案
+- `Ctrl+Alt+S`: 切換專案
 - `Ctrl+0`: 切換到檔案列
 
 
