@@ -18,6 +18,14 @@ class MakeOneLineCodeCommand(sublime_plugin.TextCommand):
         sublime.set_clipboard('; '.join(lines))
 
 
+def tuple_ver(ver_string):
+    return tuple(int(v) for v in ver_string.split('.'))
+
+
+def string_ver(ver_tuple):
+    return '.'.join(str(v) for v in ver_tuple)
+
+
 class RemovePackageThread(threading.Thread, PackageDisabler):
 
     """
@@ -119,7 +127,7 @@ def chain_update(remove_packages, install_packages, processes, on_complete=None)
 
 
 def since(since_version):
-    since_version = tuple(since_version.split("."))
+    since_version = tuple_ver(since_version)
 
     def wrap(fn):
         p = UpdateProcess(since_version, fn)
@@ -129,21 +137,26 @@ def since(since_version):
     return wrap
 
 pakages_since = [
-    ("1.0.0", [], [
+    ("0.0.2", [], [
         "Boxy Theme",
         "Boxy Theme Addon - Font Face",
+        "IMESupport",
+        ]),
+    ("1.0.0", [], [
         "EditorConfig",
         "GitGutter",
         "Google Spell Check",
-        "IMESupport",
         "MarkdownEditing",
         "SublimeLinter",
         "TodoReview",
         "Open Anything (ranlempow)",
         "Extra Completion (ranlempow)",
         "SublimeLinter-CleanCode (ranlempow)",
-        "Ancient (ranlempow)"
-    ]),
+        "Ancient (ranlempow)",
+        ]),
+    ("1.3.2", [], [
+        "A File Icon",
+        ]),
 ]
 
 
@@ -194,12 +207,15 @@ def setting130():
 
 def plugin_loaded():
     tool_settings = sublime.load_settings('RansTool.sublime-settings')
-    previous_version = tuple(tool_settings.get("previous_version", "0.0.0").split("."))
-    current_version = tuple(tool_settings.get("current_version").split("."))
+    previous_version = tuple_ver(tool_settings.get("previous_version", "0.0.0"))
+    if tool_settings.get('bootstrapped') is True and previous_version == (0, 0, 0):
+        previous_version = (0, 0, 1)
+    current_version = tuple_ver(tool_settings.get("current_version"))
 
     remove_packages = []
     install_packages = []
     for since, removes, installs in pakages_since:
+        since = tuple_ver(since)
         if previous_version < since <= current_version:
             for rm in removes:
                 if rm in install_packages:
@@ -225,5 +241,5 @@ def plugin_loaded():
     if remove_packages or install_packages or processes:
         chain_update(remove_packages, install_packages, processes, on_complete=on_complete)
     else:
-        tool_settings.set('previous_version', '.'.join(current_version))
+        tool_settings.set('previous_version', string_ver(current_version))
         sublime.save_settings('RansTool.sublime-settings')
