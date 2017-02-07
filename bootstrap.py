@@ -9,6 +9,10 @@ from package_control.package_installer import PackageInstallerThread
 from package_control.thread_progress import ThreadProgress
 from package_control.package_manager import PackageManager
 from package_control.package_disabler import PackageDisabler
+from package_control import events
+
+
+__VERSION__ = '1.3.3'
 
 
 class MakeOneLineCodeCommand(sublime_plugin.TextCommand):
@@ -137,7 +141,7 @@ def since(since_version):
     return wrap
 
 pakages_since = [
-    ("0.0.2", [], [
+    ("0.0.1", [], [
         "Boxy Theme",
         "Boxy Theme Addon - Font Face",
         "IMESupport",
@@ -210,7 +214,7 @@ def plugin_loaded():
     previous_version = tuple_ver(tool_settings.get("previous_version", "0.0.0"))
     if tool_settings.get('bootstrapped') is True and previous_version == (0, 0, 0):
         previous_version = (0, 0, 1)
-    current_version = tuple_ver(tool_settings.get("current_version"))
+    current_version = tuple_ver(tool_settings.get("current_version", __VERSION__))
 
     remove_packages = []
     install_packages = []
@@ -220,12 +224,16 @@ def plugin_loaded():
             for rm in removes:
                 if rm in install_packages:
                     install_packages.remove(rm)
-                elif rm not in remove_packages:
+                elif (rm not in remove_packages
+                      and events.remove(rm) is False):
                     remove_packages.append(rm)
             for ins in installs:
                 if ins in remove_packages:
                     remove_packages.remove(ins)
-                elif ins not in install_packages:
+                elif (ins not in install_packages
+                      and events.install(ins) is False
+                      and events.pre_upgrade(ins) is False
+                      and events.post_upgrade(ins) is False):
                     install_packages.append(ins)
 
     processes = []
@@ -234,7 +242,7 @@ def plugin_loaded():
             processes.append(p)
 
     def on_complete():
-        tool_settings.set('previous_version', '.'.join(current_version))
+        tool_settings.set('previous_version', string_ver(current_version))
         sublime.save_settings('RansTool.sublime-settings')
         sublime.active_window().status_message("Sublime Life is successful installed")
 
