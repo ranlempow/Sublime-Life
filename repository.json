@@ -27,23 +27,25 @@
 		},
 		{
 			"name": "SublimeLinter-CleanCode (ranlempow)",
-			"details": "https://github.com/ranlempow/SublimeLinter-CleanCode",
+			"details": "https://github.com/ranlempow/Sublime-Life",
 			"releases": [
 				{
 					"version": "1.0.1",
-					"url": "https://github.com/ranlempow/SublimeLinter-CleanCode/archive/v1.0.1.zip",
-					"date": "2017-01-01 08:03:10",
+					"url": "https://github.com/ranlempow/Sublime-Life/archive/modules/sublimelinter-cleancode/v1.0.1.zip",
+					"date": "2017-12-12 08:03:10",
 					"sublime_text": "*"
 				}
 			]
 		},
 		{
 			"name": "RansTool (ranlempow)",
-			"details": "https://github.com/ranlempow/Sublime-RansTool",
+			"details": "https://github.com/ranlempow/Sublime-Life",
 			"releases": [
 				{
-					"sublime_text": "*",
-					"tags": true
+					"version": "1.3.2",
+					"url": "https://github.com/ranlempow/Sublime-Life/archive/modules/sublime-ranstool/v1.3.2.zip",
+					"date": "2017-12-12 08:03:10",
+					"sublime_text": "*"
 				}
 			]
 		},
@@ -53,8 +55,8 @@
 			"releases": [
 				{
 					"version": "1.0.1",
-					"url": "https://github.com/ranlempow/Ancient/archive/v1.0.1.zip",
-					"date": "2017-01-01 08:03:10",
+					"url": "https://github.com/ranlempow/Sublime-Life/archive/modules/sublime-ancient/v1.0.1.zip",
+					"date": "2017-12-12 08:03:10",
 					"sublime_text": "*"
 				}
 			]

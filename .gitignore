@@ -94,6 +94,6 @@ private/
 
 # Sublime Text
 *.sublime-*
-
+packages/
 
 .aws

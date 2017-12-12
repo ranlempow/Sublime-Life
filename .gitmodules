@@ -1,0 +1,43 @@
+[submodule "sublime-intellidocs"]
+	url = ./
+	path = packages/Sublime-IntelliDocs
+	branch = master
+	upstream = git@github.com:shortcutme/Sublime-IntelliDocs.git
+	checkout = FREE
+	compose = true
+	central = true
+
+[submodule "sublime-ancient"]
+	url = ./
+	path = packages/Sublime-Ancient
+	branch = master
+	public = git@github.com:ranlempow/Sublime-Ancient.git
+	checkout = FREE
+	compose = true
+	central = true
+
+[submodule "sublime-fonts"]
+	url = ./
+	path = packages/Sublime-Fonts
+	branch = master
+	public = git@github.com:ranlempow/Sublime-fonts.git
+	checkout = FREE
+	compose = true
+	central = true
+
+[submodule "sublime-ranstool"]
+	url = ./
+	path = packages/Sublime-RansTool
+	branch = master
+	checkout = FREE
+	compose = true
+	central = true
+
+[submodule "sublimelinter-cleancode"]
+	url = ./
+	path = packages/Sublime-CleanCode
+	branch = master
+	upstream = git@github.com:SublimeLinter/SublimeLinter-flake8.git
+	checkout = FREE
+	compose = true
+	central = true
