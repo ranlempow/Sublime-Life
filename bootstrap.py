@@ -10,6 +10,7 @@ from package_control.thread_progress import ThreadProgress
 from package_control.package_manager import PackageManager
 from package_control.package_disabler import PackageDisabler
 
+from .lib import install_font
 
 class MakeOneLineCodeCommand(sublime_plugin.TextCommand):
     def run(self, edit):
@@ -165,10 +166,15 @@ pakages_since = [
         "Open URL",
         "Codecs33",
         "ConvertToUTF8",
-        "Bats",
-        "CMake",
         "INI",
-        "Nix"
+        ]),
+    ("1.4.1", [
+        "GitGutter",
+        "Boxy Theme",
+        "Boxy Theme Addon - Font Face",
+        ], [
+        "Theme - Monokai Pro",
+        "SublimeLinter-addon-toggler",
         ]),
 ]
 
@@ -206,7 +212,7 @@ def setting100():
 def setting130():
     # Add to Markdown.sublime-settings
     # this is a hack to solve MarkdownEditing config problem
-    markdown_settings = sublime.load_settings('Markdown.sublime-settings')
+    
     md_defaults = {
         "color_scheme": "Packages/User/SublimeLinter/Ancient (SL).tmTheme",
         "draw_centered": False,
@@ -214,6 +220,7 @@ def setting130():
         "line_numbers": True,
         "margin": 32
     }
+    markdown_settings = sublime.load_settings('Markdown.sublime-settings')
     for key, value in md_defaults.items():
         markdown_settings.set(key, value)
     sublime.save_settings('Markdown.sublime-settings')
@@ -221,20 +228,71 @@ def setting130():
 @since("1.4.0")
 def setting140():
     # change some defualt setting
-    markdown_settings = sublime.load_settings('Markdown.sublime-settings')
-    md_defaults = {
-        "fold_buttons": false,
+    defaults = {
+        "fold_buttons": False,
         # "font_face": "Hack Nerd Font",
 
         "font_size": 16,
-        "show_full_path": true,
-        "theme_sidebar_folder_atomized": true,
-        "theme_sidebar_folder_mono": true,
+        "show_full_path": True,
+        "theme_sidebar_folder_atomized": True,
+        "theme_sidebar_folder_mono": True,
     }
+    base_settings = sublime.load_settings('Preferences.sublime-settings')
     for key, value in defaults.items():
         base_settings.set(key, value)
     sublime.save_settings('Preferences.sublime-settings')
 
+@since("1.4.1")
+def setting141():
+    # change some defualt setting
+    
+    install_font.install_font('{baseurl}/Hack Regular Nerd Font Complete.ttf'.format(
+            baseurl='https://github.com/ranlempow/fonts/raw/master'))
+
+    defaults = {
+        "font_face": "Hack Nerd Font",
+        "theme": "Monokai Pro.sublime-theme",
+
+    }
+    base_settings = sublime.load_settings('Preferences.sublime-settings')
+    for key, value in defaults.items():
+        base_settings.set(key, value)
+    base_settings.erase('theme_sidebar_font_lg')
+    base_settings.erase('theme_tab_font_sm')
+    base_settings.erase('theme_tab_size_md')
+    base_settings.erase('theme_sidebar_folder_atomized')
+    base_settings.erase('theme_sidebar_folder_mono')
+    sublime.save_settings('Preferences.sublime-settings')
+    
+    sublimelinter_defaults = {
+        "gutter_theme": "Packages/Theme - Monokai Pro/Monokai Pro.gutter-theme",
+        "styles": [
+            {
+                "mark_style": "none",
+                "priority": 1,
+                "scope": "region.orangish",
+                "icon": "warning",
+                "types": [
+                    "warning"
+                ]
+            },
+            {
+                "mark_style": "none",
+                "priority": 1,
+                "scope": "region.redish",
+                "icon": "error",
+                "types": [
+                    "error"
+                ]
+            }
+        ],
+        "lint_mode": "save",
+        "show_panel_on_save": "view",
+    }
+    sb_settings = sublime.load_settings('SublimeLinter.sublime-settings')
+    for key, value in sublimelinter_defaults.items():
+        sb_settings.set(key, value)
+    sublime.save_settings('SublimeLinter.sublime-settings')
 
 
 def plugin_loaded():
@@ -266,7 +324,7 @@ def plugin_loaded():
             processes.append(p)
 
     def on_complete():
-        tool_settings.set('previous_version', '.'.join(current_version))
+        tool_settings.set('previous_version', string_ver(current_version))
         sublime.save_settings('RansTool.sublime-settings')
         sublime.active_window().status_message("Sublime Life is successful installed")
 

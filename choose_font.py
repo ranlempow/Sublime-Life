@@ -2,18 +2,20 @@ import sublime
 import sublime_plugin
 
 import os
-import urllib
+from .lib import install_font
 
 
 class ChooseFontCommand(sublime_plugin.WindowCommand):
     baseurl = 'https://github.com/ranlempow/fonts/raw/master'
     fonts = {
-        'Yahei Consolas Hybrid': ['yahei consolas hybrid 1', '雅黑體',
+        'Yahei Consolas Hybrid': [('yahei', 'yahei consolas hybrid 1'), '雅黑體',
                                   '{baseurl}/Yahei.Consolas.1.13.ttf'],
         'Consolas': ['consola', '最熱門',
                      '{baseurl}/consola.ttf'],
         'Inconsolata': ['inconsolata-regular', '最好看',
                         '{baseurl}/Inconsolata-Regular.ttf'],
+        'Hack Nerd Font': ['hack regular nerd font complete', '最流行',
+                        '{baseurl}/Hack Regular Nerd Font Complete.ttf'],
         'MingLiU': ['mingliu', '細明體',
                     '{baseurl}/mingliu.ttc'],
         'SimSun': ['simsun', '宋體',
@@ -32,6 +34,8 @@ class ChooseFontCommand(sublime_plugin.WindowCommand):
         ('Consolas', '12', 'latin mono'),
         ('Consolas', '13', 'latin mono'),
         ('Consolas', '14', 'latin mono'),
+        ('Hack Nerd Font', '14', 'latin mono'),
+        ('Hack Nerd Font', '16', 'latin mono'),
         ('MingLiU', '11', 'CJK mono'),
         ('MingLiU', '12', 'CJK mono'),
         ('MingLiU', '15', 'CJK mono'),
@@ -66,9 +70,8 @@ class ChooseFontCommand(sublime_plugin.WindowCommand):
         fontsize = int(fontsize)
         target = self.targets[self.chosen[1]]
 
-        system_font_dir = os.path.join(os.environ['WINDIR'], 'Fonts')
         font_filename = self.fonts[fontface][0]
-        if font_filename not in [f.lower().split('.')[0] for f in os.listdir(system_font_dir)]:
+        if not install_font.has_font(font_filename):
             # need install font from internet
             url = self.fonts[fontface][2].format(baseurl=self.baseurl)
             self.window.status_message('downloading font from: ' + url)
@@ -79,20 +82,7 @@ class ChooseFontCommand(sublime_plugin.WindowCommand):
             self.setfont(target, fontface, fontsize)
 
     def download_font(self, url, target, fontface, fontsize):
-        file = os.path.join(os.environ['TEMP'], os.path.basename(url))
-        with open(file, 'wb') as fp:
-            body = urllib.request.urlopen(url).read()
-            fp.write(body)
-        vbsfile = os.path.join(os.environ['TEMP'], os.path.basename(url) + '.vbs')
-        self.window.status_message('installing font: ' + file)
-        with open(vbsfile, 'w') as fp:
-            fp.write("""
-Set objShell = CreateObject("Shell.Application")
-Set objFolder = objShell.Namespace(&H14&)
-objFolder.CopyHere("{}")
-""".format(file))
-
-        os.system('wscript "{}"'.format(vbsfile))
+        install_font.install_font(url)
         def setfont():
             self.setfont(target, fontface, fontsize)
         sublime.set_timeout(setfont, 1500)

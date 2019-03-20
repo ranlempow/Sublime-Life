@@ -1,3 +1,16 @@
+## RansTool [1.4.1] - 2019-03-21
+- sublime text 3.2 released
+- remove package GitGutter
+- choose_font: add hack font
+- choose_font: new ./lib/install_font
+- set default fontface to `hack font nerd`
+- change theme to `Theme - Monokai Pro`
+- change sublimelinter theme to `Theme - Monokai Pro`
+- use `SublimeLinter-addon-toggler` and key binds with `f10`
+- TODO: sublimelinter need enve to install linter binary executables
+- deprecated: ./gitgutter_switch.py
+- deprecated: ./linter_switch.py
+
 ## RansTool [1.4.0] - 2019-03-20
 - recompose project reposity structure, again
 - remove package Extra Completion (ranlempow)
@@ -9,8 +22,8 @@
 - setting: show full path at title
 - setting: sidebar icon are atomized and mono
 - hotkey: ctrl+u to delete before cursor
-- utf-8 support: add package Codecs33, ConvertToUTF8
-- add language package: Bats, CMake, INI, Nix
+- utf-8 support on macos/linux: add package Codecs33, ConvertToUTF8
+- add language package: INI
 
 ## SublimeLife [1.3.5] - 2017-12-12
 - recompose project reposity structure

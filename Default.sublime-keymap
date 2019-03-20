@@ -1,8 +1,7 @@
 [
 	{ "keys": ["ctrl+alt+f6"], "command": "google_spell_check" },
-	{ "keys": ["alt+t"], "command": "todo_review", "args": { "open_files": true } },	
-	{ "keys": ["f5"], "command": "toggle_git_gutter" },
-	{ "keys": ["f10"], "command": "toggle_linter" },
+	{ "keys": ["alt+t"], "command": "todo_review", "args": { "open_files": true } },
+	{ "keys": ["f10"], "command": "sublime_linter_addon_toggle_linters"},
 
 	{ "keys": ["ctrl+alt+w"], "command": "close_workspace" },
 	{ "keys": ["ctrl+alt+s"], "command": "prompt_select_workspace" },
