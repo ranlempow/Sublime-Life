@@ -1,0 +1,6 @@
+{
+	"schema_version": "3.0.0",
+	"repositories": [
+		"https://raw.githubusercontent.com/ranlempow/Sublime-Life/master/repository.json"
+	]
+}

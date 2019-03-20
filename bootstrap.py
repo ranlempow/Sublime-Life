@@ -157,7 +157,21 @@ pakages_since = [
     ("1.3.2", [], [
         "A File Icon",
         ]),
+    ("1.4.0", [
+        "Open Anything (ranlempow)",
+        "Extra Completion (ranlempow)",
+        "SublimeLinter-CleanCode (ranlempow)",    
+        ], [
+        "Open URL",
+        "Codecs33",
+        "ConvertToUTF8",
+        "Bats",
+        "CMake",
+        "INI",
+        "Nix"
+        ]),
 ]
+
 
 
 @since("1.0.0")
@@ -203,6 +217,24 @@ def setting130():
     for key, value in md_defaults.items():
         markdown_settings.set(key, value)
     sublime.save_settings('Markdown.sublime-settings')
+
+@since("1.4.0")
+def setting140():
+    # change some defualt setting
+    markdown_settings = sublime.load_settings('Markdown.sublime-settings')
+    md_defaults = {
+        "fold_buttons": false,
+        # "font_face": "Hack Nerd Font",
+
+        "font_size": 16,
+        "show_full_path": true,
+        "theme_sidebar_folder_atomized": true,
+        "theme_sidebar_folder_mono": true,
+    }
+    for key, value in defaults.items():
+        base_settings.set(key, value)
+    sublime.save_settings('Preferences.sublime-settings')
+
 
 
 def plugin_loaded():

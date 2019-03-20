@@ -17,6 +17,7 @@
 	{ "keys": ["alt+backspace"], "command": "delete_word", "args": { "forward": false } },
 	{ "keys": ["alt+delete"], "command": "delete_word", "args": { "forward": true } },
 	
-	{ "keys": ["ctrl+alt+v"], "command": "paste_from_history" }
+	{ "keys": ["ctrl+alt+v"], "command": "paste_from_history" },
 
+	{ "keys": ["ctrl+u"], "command": "run_macro_file", "args": {"file": "res://Packages/Default/Delete to Hard BOL.sublime-macro"} }
 ]
