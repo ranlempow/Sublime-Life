@@ -10,5 +10,9 @@
 	{
 		"caption": "Fix Markdwon Editing Enter Glitch",
 		"command": "fix_markdwon_editing_enter_glitch"
+	},
+	{
+		"caption": "Fix ConvertToUTF8 Prompt",
+		"command": "fix_convert_to_utf_prompt"
 	}
 ]

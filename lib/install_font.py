@@ -6,7 +6,7 @@ import urllib
 def install_font(url):
     file = os.path.join(tempfile.gettempdir(), os.path.basename(url))
     with open(file, 'wb') as fp:
-        url_p = urllib.parse.quote(url)
+        url_p = os.path.dirname(url) + '/' + urllib.parse.quote(os.path.basename(url))
         print('download font from {}'.format(url_p))
         body = urllib.request.urlopen(url_p).read()
         fp.write(body)
@@ -43,6 +43,7 @@ def has_font(font_filename):
     else:
         raise ValueError('unknown system {}'.fomrat(os.platform))
 
+    font_filename = font_filename.lower().split('.')[0]
     for font_dir in system_font_dir:
         if os.path.exists(font_dir):
             files = [f.lower().split('.')[0] for f in os.listdir(font_dir)]

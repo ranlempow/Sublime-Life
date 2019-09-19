@@ -26,6 +26,43 @@ class FixMarkdwonEditingEnterGlitchCommand(sublime_plugin.TextCommand):
         fix_markdown_editing_enter_glitch(sublime.installed_packages_path(), sublime.cache_path())
 
 
+def fix_convert_to_utf8_prompt():
+    # hack ConvertToUTF8: consider ASCII as UTF8
+    origine_code = '''\
+        if not_detected:
+            # using encoding detected by ST
+            encoding = view_encoding
+        else:
+            show_selection(view, [
+                ['{0} ({1:.0%})'.format(encoding, confidence), encoding],
+                ['{0}'.format(view_encoding), view_encoding]
+            ])
+'''
+    hack_code = '''\
+        if not_detected:
+            # using encoding detected by ST
+            encoding = view_encoding
+        elif encoding == 'ASCII' and view_encoding == 'UTF-8':
+            encoding = view_encoding
+        else:
+            show_selection(view, [
+                ['{0} ({1:.0%})'.format(encoding, confidence), encoding],
+                ['{0}'.format(view_encoding), view_encoding]
+            ])
+'''
+
+    target_py_path = os.path.join(sublime.packages_path(), 'ConvertToUTF8', 'ConvertToUTF8.py')
+    with open(target_py_path, 'r') as f:
+        newcode = f.read().replace(origine_code.replace('    ', '\t'), hack_code.replace('    ', '\t'))
+    with open(target_py_path, 'w') as f:
+        f.write(newcode)
+
+
+class FixConvertToUtfPrompt(sublime_plugin.TextCommand):
+    def run(self, edit):
+        fix_convert_to_utf8_prompt()
+
+
 def tuple_ver(ver_string):
     return tuple(int(v) for v in ver_string.split('.'))
 
@@ -205,6 +242,9 @@ pakages_since = [
         "TrailingSpaces",
         "Trimmer",
         ]),
+    ("1.5.1", [
+        'ChineseLocalizations'
+        ], []),
 ]
 
 @since("1.0.0")
@@ -241,7 +281,8 @@ def setting130():
     # this is a hack to solve MarkdownEditing config problem
 
     md_defaults = {
-        "color_scheme": "Packages/User/SublimeLinter/Ancient (SL).tmTheme",
+        # "color_scheme": "Packages/User/SublimeLinter/Ancient (SL).tmTheme",
+        "color_scheme": "Packages/Ancient (ranlempow)/Ancient.tmTheme",
         "draw_centered": False,
         "highlight_line": True,
         "line_numbers": True,
@@ -274,7 +315,7 @@ def setting140():
 def setting141():
     # change some defualt setting
 
-    if install_font.has_font('Hack Regular Nerd Font Complete.ttf'):
+    if not install_font.has_font('Hack Regular Nerd Font Complete.ttf'):
         install_font.install_font('{baseurl}/Hack Regular Nerd Font Complete.ttf'.format(
                 baseurl='https://github.com/ranlempow/fonts/raw/master'))
 
@@ -338,34 +379,7 @@ def setting150():
         base_settings.set(key, value)
 
     # hack ConvertToUTF8: consider ASCII as UTF8
-    origine_code = '''\
-        if not_detected:
-            # using encoding detected by ST
-            encoding = view_encoding
-        else:
-            show_selection(view, [
-                ['{0} ({1:.0%})'.format(encoding, confidence), encoding],
-                ['{0}'.format(view_encoding), view_encoding]
-            ])
-'''
-    hack_code = '''\
-        if not_detected:
-            # using encoding detected by ST
-            encoding = view_encoding
-        elif encoding == 'ASCII' and view_encoding == 'UTF8':
-            encoding = view_encoding
-        else:
-            show_selection(view, [
-                ['{0} ({1:.0%})'.format(encoding, confidence), encoding],
-                ['{0}'.format(view_encoding), view_encoding]
-            ])
-'''
-
-    target_py_path = os.path.join(sublime.packages_path(), 'ConvertToUTF8', 'ConvertToUTF8.py')
-    with open(target_py_path, 'r') as f:
-        newcode = f.read().replace(origine_code.replace('    ', '\t'), hack_code.replace('    ', '\t'))
-    with open(target_py_path, 'w') as f:
-        f.write(newcode)
+    fix_convert_to_utf8_prompt()
 
 
 class ToolProgressMemory:
@@ -408,6 +422,19 @@ def plugin_loaded():
                     candidate_remove.remove(ins)
                 elif ins not in candidate_install:
                     candidate_install.append(ins)
+
+    confighome = os.environ.get('XDG_CONFIG_HOME', os.path.expanduser('~/.config'))
+    configpath = os.environ.get('ST_LIFE_USERCONFIG_PATH', os.path.join(confighome, 'sublime-life'))
+
+    extra_packages_file = os.path.join(configpath, 'extra-packages.ini')
+    if os.path.exists(extra_packages_file):
+        with open(extra_packages_file) as f:
+            extra_packages = [pkg.strip() for pkg in f.readlines() if pkg.strip() ]
+        for expkg in extra_packages:
+            if expkg in candidate_remove:
+                candidate_remove.remove(expkg)
+            elif expkg not in candidate_install:
+                candidate_install.append(expkg)
 
     installed_packages = PackageManager().list_packages()
     remove_packages = []

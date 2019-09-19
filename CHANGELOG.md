@@ -1,6 +1,13 @@
+## RansTool [1.5.1] - 2019-09-19
+- remove ChineseLocalizations package, this package is not well maintained
+- auto install extra package on `~/.config/sublime-life/extra-packages.ini`
+- fixed: markdown color_scheme is correct now
+- add install.sh to help user install RansTool
+  call with ST_PACKAGE_PATH to set sublime package path
+
 ## RansTool [1.5.0] - 2019-09-19
 - add command FixMarkdwonEditingEnterGlitchCommand
-- add many bundle package: 
+- add many bundle package:
   `AdvancedNewFile`, `AlignTab`, `All Autocomplete`,
   `ChineseLocalizations`, `FileDiffs`, `HexViewer`,
   `Line Endings Unify`, `Outline`, `PlainTasks`, `RawLineEdit`,
@@ -26,7 +33,7 @@
 - recompose project reposity structure, again
 - remove package Extra Completion (ranlempow)
 - remove package SublimeLinter-CleanCode (ranlempow)
-- change package Open Anything (ranlempow) to noahcoad/open-url 
+- change package Open Anything (ranlempow) to noahcoad/open-url
 - change package RansTool (ranlempow) to ranlempow/Sublime-Life#master
 - setting: no fold buttons on line number bar
 - setting: default font_size to 16px

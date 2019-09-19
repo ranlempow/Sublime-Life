@@ -107,7 +107,7 @@ class ChooseFontCommand(sublime_plugin.WindowCommand):
 
 
     def run(self):
-        
+
         self.chosen = [None, None]
         fontmenu = ['{1}px {0}: {2} {3}'.format(*(suite + (self.fonts[suite[0]][1],)))
                     for suite in self.suites]
