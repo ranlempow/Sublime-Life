@@ -2,6 +2,7 @@
 import sublime
 import sublime_plugin
 
+import os
 import time
 import threading
 
@@ -169,7 +170,7 @@ pakages_since = [
     ("1.4.0", [
         "Open Anything (ranlempow)",
         "Extra Completion (ranlempow)",
-        "SublimeLinter-CleanCode (ranlempow)",    
+        "SublimeLinter-CleanCode (ranlempow)",
         ], [
         "Open URL",
         "Codecs33",
@@ -238,7 +239,7 @@ def setting100():
 def setting130():
     # Add to Markdown.sublime-settings
     # this is a hack to solve MarkdownEditing config problem
-    
+
     md_defaults = {
         "color_scheme": "Packages/User/SublimeLinter/Ancient (SL).tmTheme",
         "draw_centered": False,
@@ -291,7 +292,7 @@ def setting141():
     base_settings.erase('theme_sidebar_folder_atomized')
     base_settings.erase('theme_sidebar_folder_mono')
     sublime.save_settings('Preferences.sublime-settings')
-    
+
     sublimelinter_defaults = {
         "gutter_theme": "Packages/Theme - Monokai Pro/Monokai Pro.gutter-theme",
         "styles": [
@@ -335,7 +336,7 @@ def setting150():
     base_settings = sublime.load_settings('Preferences.sublime-settings')
     for key, value in defaults.items():
         base_settings.set(key, value)
-    
+
     # hack ConvertToUTF8: consider ASCII as UTF8
     origine_code = '''\
         if not_detected:
@@ -367,17 +368,20 @@ def setting150():
         f.write(newcode)
 
 
-def _load_tool_versions():
-    tool_settings = sublime.load_settings('RansTool.sublime-settings')
-    previous_version = tuple_ver(tool_settings.get("previous_version", "0.0.0"))
-    # if tool_settings.get('bootstrapped') is True and previous_version == (0, 0, 0):
-    #     previous_version = (0, 0, 1)
-    current_version = tuple_ver(tool_settings.get("current_version"))
-    return previous_version, current_version
+class ToolProgressMemory:
+    def __init__(self):
+        self.tool_settings = sublime.load_settings('RansTool.sublime-settings')
 
-def _save_tool_version(new_version):
-    tool_settings.set('previous_version', string_ver(new_version))
-    sublime.save_settings('RansTool.sublime-settings')
+    def load_progress_version(self):
+        previous_version = tuple_ver(self.tool_settings.get("previous_version", "0.0.0"))
+        # if tool_settings.get('bootstrapped') is True and previous_version == (0, 0, 0):
+        #     previous_version = (0, 0, 1)
+        current_version = tuple_ver(self.tool_settings.get("current_version"))
+        return previous_version, current_version
+
+    def save_progress_version(self, new_version):
+        self.tool_settings.set('previous_version', string_ver(new_version))
+        sublime.save_settings('RansTool.sublime-settings')
 
 
 def plugin_loaded():
@@ -386,23 +390,42 @@ def plugin_loaded():
     # if tool_settings.get('bootstrapped') is True and previous_version == (0, 0, 0):
     #     previous_version = (0, 0, 1)
     # current_version = tuple_ver(tool_settings.get("current_version"))
-    previous_version, current_version = _load_tool_versions()
+    progress_memory = ToolProgressMemory()
+    previous_version, current_version = progress_memory.load_progress_version()
 
-    remove_packages = []
-    install_packages = []
+    candidate_remove = []
+    candidate_install = []
     for since, removes, installs in pakages_since:
         since = tuple_ver(since)
         if previous_version < since <= current_version:
             for rm in removes:
-                if rm in install_packages:
-                    install_packages.remove(rm)
-                elif rm not in remove_packages:
-                    remove_packages.append(rm)
+                if rm in candidate_install:
+                    candidate_install.remove(rm)
+                elif rm not in candidate_remove:
+                    candidate_remove.append(rm)
             for ins in installs:
-                if ins in remove_packages:
-                    remove_packages.remove(ins)
-                elif ins not in install_packages:
-                    install_packages.append(ins)
+                if ins in candidate_remove:
+                    candidate_remove.remove(ins)
+                elif ins not in candidate_install:
+                    candidate_install.append(ins)
+
+    installed_packages = PackageManager().list_packages()
+    remove_packages = []
+    install_packages = []
+    for inspkg in candidate_install:
+        if inspkg in installed_packages:
+            print('RanTool install {} (Skip, already installed)'.format(inspkg))
+        else:
+            print('RanTool install {}'.format(inspkg))
+            install_packages.append(inspkg)
+
+    for rmpkg in candidate_remove:
+        if rmpkg not in installed_packages:
+            print('RanTool remove {} (Skip, not exist)'.format(rmpkg))
+        else:
+            print('RanTool remove {}'.format(rmpkg))
+            remove_packages.append(rmpkg)
+
 
     processes = []
     for p in UpdateProcess.update_processes:
@@ -410,7 +433,7 @@ def plugin_loaded():
             processes.append(p)
 
     def on_complete():
-        _save_tool_version(current_version)
+        progress_memory.save_progress_version(current_version)
         # tool_settings.set('previous_version', string_ver(current_version))
         # sublime.save_settings('RansTool.sublime-settings')
         if remove_packages or install_packages or processes:

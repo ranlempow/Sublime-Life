@@ -43,7 +43,7 @@ def fix_markdown_editing_enter_glitch(installed_packages_path, tmp_path):
     except FileNotFoundError:
         pass
 
-    print("backup '{}' to '{}'".fomrat(pkg_file, pkg_backup))
+    print("backup '{}' to '{}'".format(pkg_file, pkg_backup))
     os.rename(pkg_file, pkg_backup)
     os.rename(pkg_writing, pkg_file)
 
