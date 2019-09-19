@@ -6,7 +6,9 @@ import urllib
 def install_font(url):
     file = os.path.join(tempfile.gettempdir(), os.path.basename(url))
     with open(file, 'wb') as fp:
-        body = urllib.request.urlopen(url).read()
+        url_p = urllib.parse.quote(url)
+        print('download font from {}'.format(url_p))
+        body = urllib.request.urlopen(url_p).read()
         fp.write(body)
     if sys.platform == 'win32':
         vbsfile = os.path.join(os.environ['TEMP'], os.path.basename(url) + '.vbs')

@@ -272,9 +272,10 @@ def setting140():
 @since("1.4.1")
 def setting141():
     # change some defualt setting
-    
-    install_font.install_font('{baseurl}/Hack Regular Nerd Font Complete.ttf'.format(
-            baseurl='https://github.com/ranlempow/fonts/raw/master'))
+
+    if install_font.has_font('Hack Regular Nerd Font Complete.ttf'):
+        install_font.install_font('{baseurl}/Hack Regular Nerd Font Complete.ttf'.format(
+                baseurl='https://github.com/ranlempow/fonts/raw/master'))
 
     defaults = {
         "font_face": "Hack Nerd Font",
