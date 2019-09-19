@@ -21,9 +21,10 @@ def install_code():
     sublime.save_settings('Package Control.sublime-settings')
     sublime.set_timeout(lambda: sublime.message_dialog("Please restart Sublime Text to continuity install Sublime-Life"), 500)
 
-import inspect
-lines = inspect.getsource(install_code)
-lines = lines.split('\n')[1:]
-lines = [ ln[4:] for ln in lines if ln and ln[4] != '#' ]
-lines = [ ( ln[:-1] if ln[-1] == '\\' else ln + ';') for ln in lines ]
-print(''.join(lines))
+if __name__ == '__main__':
+    import inspect
+    lines = inspect.getsource(install_code)
+    lines = lines.split('\n')[1:]
+    lines = [ ln[4:] for ln in lines if ln and ln[4] != '#' ]
+    lines = [ ( ln[:-1] if ln[-1] == '\\' else ln + ';') for ln in lines ]
+    print(''.join(lines))

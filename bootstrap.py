@@ -11,12 +11,18 @@ from package_control.package_manager import PackageManager
 from package_control.package_disabler import PackageDisabler
 
 from .lib import install_font
+from .lib.fix_markdown_editing_enter_glitch import fix_markdown_editing_enter_glitch
 
 class MakeOneLineCodeCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         code = self.view.substr(self.view.sel()[0])
         lines = [ln.strip('\t ') for ln in code.split('\n') if not ln.strip('\t ').startswith('#')]
         sublime.set_clipboard('; '.join(lines))
+
+
+class FixMarkdwonEditingEnterGlitchCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        fix_markdown_editing_enter_glitch(sublime.installed_packages_path(), sublime.cache_path())
 
 
 def tuple_ver(ver_string):
@@ -114,16 +120,18 @@ def chain_update(remove_packages, install_packages, processes, on_complete=None)
     def launch_next():
         if remove_queue:
             package = remove_queue.pop(0)
+            time.sleep(0.2)
             remove(manager, package, on_complete=launch_next)
         elif install_queue:
             package = install_queue.pop(0)
+            time.sleep(0.2)
             install(manager, package, on_complete=launch_next)
         elif processes_queue:
             process = processes_queue.pop(0)
-            process.update(on_complete=on_complete)
-        else:
-            if on_complete:
-                sublime.set_timeout(on_complete, 1000)
+            time.sleep(0.2)
+            process.update(on_complete=launch_next)
+        elif on_complete:
+            sublime.set_timeout(on_complete, 1000)
     launch_next()
 
 
@@ -176,9 +184,27 @@ pakages_since = [
         "Theme - Monokai Pro",
         "SublimeLinter-addon-toggler",
         ]),
+    ("1.5.0", [
+        ], [
+        "AdvancedNewFile",
+        "AlignTab",
+        "All Autocomplete",
+        "ChineseLocalizations",
+        "FileDiffs",
+        "HexViewer",
+        "Line Endings Unify",
+        "Outline",
+        "PlainTasks",
+        "RawLineEdit",
+        "SideBarEnhancements",
+        "StringEncode",
+        "SyncedSideBar",
+        "SyntaxManager",
+        # "Terminal",
+        "TrailingSpaces",
+        "Trimmer",
+        ]),
 ]
-
-
 
 @since("1.0.0")
 def setting100():
@@ -242,6 +268,7 @@ def setting140():
         base_settings.set(key, value)
     sublime.save_settings('Preferences.sublime-settings')
 
+
 @since("1.4.1")
 def setting141():
     # change some defualt setting
@@ -294,13 +321,71 @@ def setting141():
         sb_settings.set(key, value)
     sublime.save_settings('SublimeLinter.sublime-settings')
 
+@since("1.5.0")
+def setting150():
+    fix_markdown_editing_enter_glitch(sublime.installed_packages_path(), sublime.cache_path())
 
-def plugin_loaded():
+    defaults = {
+        "preview_on_right_click": False,
+        "close_windows_when_empty": True,
+        "theme_sidebar_folder_atomized": True,
+        "theme_sidebar_folder_mono": True,
+    }
+    base_settings = sublime.load_settings('Preferences.sublime-settings')
+    for key, value in defaults.items():
+        base_settings.set(key, value)
+    
+    # hack ConvertToUTF8: consider ASCII as UTF8
+    origine_code = '''\
+        if not_detected:
+            # using encoding detected by ST
+            encoding = view_encoding
+        else:
+            show_selection(view, [
+                ['{0} ({1:.0%})'.format(encoding, confidence), encoding],
+                ['{0}'.format(view_encoding), view_encoding]
+            ])
+'''
+    hack_code = '''\
+        if not_detected:
+            # using encoding detected by ST
+            encoding = view_encoding
+        elif encoding == 'ASCII' and view_encoding == 'UTF8':
+            encoding = view_encoding
+        else:
+            show_selection(view, [
+                ['{0} ({1:.0%})'.format(encoding, confidence), encoding],
+                ['{0}'.format(view_encoding), view_encoding]
+            ])
+'''
+
+    target_py_path = os.path.join(sublime.packages_path(), 'ConvertToUTF8', 'ConvertToUTF8.py')
+    with open(target_py_path, 'r') as f:
+        newcode = f.read().replace(origine_code.replace('    ', '\t'), hack_code.replace('    ', '\t'))
+    with open(target_py_path, 'w') as f:
+        f.write(newcode)
+
+
+def _load_tool_versions():
     tool_settings = sublime.load_settings('RansTool.sublime-settings')
     previous_version = tuple_ver(tool_settings.get("previous_version", "0.0.0"))
-    if tool_settings.get('bootstrapped') is True and previous_version == (0, 0, 0):
-        previous_version = (0, 0, 1)
+    # if tool_settings.get('bootstrapped') is True and previous_version == (0, 0, 0):
+    #     previous_version = (0, 0, 1)
     current_version = tuple_ver(tool_settings.get("current_version"))
+    return previous_version, current_version
+
+def _save_tool_version(new_version):
+    tool_settings.set('previous_version', string_ver(new_version))
+    sublime.save_settings('RansTool.sublime-settings')
+
+
+def plugin_loaded():
+    # tool_settings = sublime.load_settings('RansTool.sublime-settings')
+    # previous_version = tuple_ver(tool_settings.get("previous_version", "0.0.0"))
+    # if tool_settings.get('bootstrapped') is True and previous_version == (0, 0, 0):
+    #     previous_version = (0, 0, 1)
+    # current_version = tuple_ver(tool_settings.get("current_version"))
+    previous_version, current_version = _load_tool_versions()
 
     remove_packages = []
     install_packages = []
@@ -324,12 +409,21 @@ def plugin_loaded():
             processes.append(p)
 
     def on_complete():
-        tool_settings.set('previous_version', string_ver(current_version))
-        sublime.save_settings('RansTool.sublime-settings')
-        sublime.active_window().status_message("Sublime Life is successful installed")
+        _save_tool_version(current_version)
+        # tool_settings.set('previous_version', string_ver(current_version))
+        # sublime.save_settings('RansTool.sublime-settings')
+        if remove_packages or install_packages or processes:
+            if previous_version == (0, 0, 0):
+                sublime.active_window().status_message("Sublime Life is successful installed")
+            else:
+                sublime.active_window().status_message("Sublime Life is successful updated")
+        else:
+            sublime.active_window().status_message("Sublime Life is nothing to update")
 
-    if remove_packages or install_packages or processes:
-        chain_update(remove_packages, install_packages, processes, on_complete=on_complete)
-    else:
-        tool_settings.set('previous_version', string_ver(current_version))
-        sublime.save_settings('RansTool.sublime-settings')
+    chain_update(remove_packages, install_packages, processes, on_complete=on_complete)
+    # if remove_packages or install_packages or processes:
+    #     chain_update(remove_packages, install_packages, processes, on_complete=on_complete)
+    # else:
+    #     on_complete(nomsg=True)
+    #     # tool_settings.set('previous_version', string_ver(current_version))
+    #     # sublime.save_settings('RansTool.sublime-settings')

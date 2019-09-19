@@ -6,5 +6,9 @@
 	{
 		"caption": "Choose Font",
 		"command": "choose_font"
+	},
+	{
+		"caption": "Fix Markdwon Editing Enter Glitch",
+		"command": "fix_markdwon_editing_enter_glitch"
 	}
 ]

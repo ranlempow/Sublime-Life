@@ -1,0 +1,11 @@
+{
+	"installed_packages":
+	[
+		"Package Control",
+		"RansTool (ranlempow)",
+	],
+	"repositories":
+	[
+		"https://raw.githubusercontent.com/ranlempow/Sublime-Life/master/repository.json"
+	]
+}

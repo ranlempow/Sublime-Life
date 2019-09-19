@@ -1,3 +1,14 @@
+## RansTool [1.5.0] - 2019-09-19
+- add command FixMarkdwonEditingEnterGlitchCommand
+- add many bundle package: 
+  `AdvancedNewFile`, `AlignTab`, `All Autocomplete`,
+  `ChineseLocalizations`, `FileDiffs`, `HexViewer`,
+  `Line Endings Unify`, `Outline`, `PlainTasks`, `RawLineEdit`,
+  `SideBarEnhancements`, `StringEncode`, `SyncedSideBar`,
+  `SyntaxManager`, `TrailingSpaces`, `Trimmer`
+- fixed: right click menu on sidebar
+- hack: redundant prompt at encode detecting on ConvertToUTF8
+
 ## RansTool [1.4.1] - 2019-03-21
 - sublime text 3.2 released
 - remove package GitGutter
