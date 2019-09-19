@@ -24,7 +24,7 @@ def fix_markdown_editing_enter_glitch(installed_packages_path, tmp_path):
 
 
     zin = zipfile.ZipFile(pkg_file, 'r')
-    zout = zipfile.ZipFile(pkg_writing, 'x')
+    zout = zipfile.ZipFile(pkg_writing, 'w')
     for item in zin.infolist():
         buf = zin.read(item.filename)
         if item.filename == "Default (OSX).sublime-keymap":
