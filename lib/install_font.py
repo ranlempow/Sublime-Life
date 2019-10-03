@@ -12,7 +12,8 @@ def install_font(url):
         fp.write(body)
     if sys.platform == 'win32':
         vbsfile = os.path.join(os.environ['TEMP'], os.path.basename(url) + '.vbs')
-        self.window.status_message('installing font: ' + file)
+        # self.window.status_message('installing font: ' + file)
+        print('installing font {}'.format(file))
         with open(vbsfile, 'w') as fp:
             fp.write("""
     Set objShell = CreateObject("Shell.Application")

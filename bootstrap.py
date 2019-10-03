@@ -3,6 +3,7 @@ import sublime
 import sublime_plugin
 
 import os
+import sys
 import time
 import threading
 
@@ -366,7 +367,8 @@ def setting141():
 
 @since("1.5.0")
 def setting150():
-    fix_markdown_editing_enter_glitch(sublime.installed_packages_path(), sublime.cache_path())
+    if sys.platform == 'darwin':
+        fix_markdown_editing_enter_glitch(sublime.installed_packages_path(), sublime.cache_path())
 
     defaults = {
         "preview_on_right_click": False,

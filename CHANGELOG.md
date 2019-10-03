@@ -1,3 +1,7 @@
+## RansTool [1.5.2] - 2019-10-03
+- fixed: bug on install_font.py
+- fixed: use fix_markdown_editing_enter_glitch on macos only
+
 ## RansTool [1.5.1] - 2019-09-19
 - remove ChineseLocalizations package, this package is not well maintained
 - auto install extra package on `~/.config/sublime-life/extra-packages.ini`
