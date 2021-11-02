@@ -383,6 +383,15 @@ def setting150():
     # hack ConvertToUTF8: consider ASCII as UTF8
     fix_convert_to_utf8_prompt()
 
+@since("1.5.2")
+def setting150():
+    defaults = {
+        "theme": "Monokai Pro (Filter Spectrum).sublime-theme",
+    }
+    base_settings = sublime.load_settings('Preferences.sublime-settings')
+    for key, value in defaults.items():
+        base_settings.set(key, value)
+
 
 class ToolProgressMemory:
     def __init__(self):
